@@ -1,0 +1,15 @@
+
+# Module configuration
+module.tx_categorytreebuilder_tools_categorytreebuilderbuilder {
+    persistence {
+        storagePid = {$module.tx_categorytreebuilder_builder.persistence.storagePid}
+    }
+    view {
+        templateRootPaths.0 = EXT:categorytree_builder/Resources/Private/Backend/Templates/
+        templateRootPaths.1 = {$module.tx_categorytreebuilder_builder.view.templateRootPath}
+        partialRootPaths.0 = EXT:categorytree_builder/Resources/Private/Backend/Partials/
+        partialRootPaths.1 = {$module.tx_categorytreebuilder_builder.view.partialRootPath}
+        layoutRootPaths.0 = EXT:categorytree_builder/Resources/Private/Backend/Layouts/
+        layoutRootPaths.1 = {$module.tx_categorytreebuilder_builder.view.layoutRootPath}
+    }
+}

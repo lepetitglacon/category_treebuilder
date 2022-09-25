@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:categorytree_builder/Resources/Private/Language/locallang_csh_tx_categorytreebuilder_domain_model_tree.xlf" date="2022-09-18T09:29:54Z" product-name="categorytree_builder">
+		<header/>
+		<body>
+			<trans-unit id="title.description" resname="title.description">
+				<source>title</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

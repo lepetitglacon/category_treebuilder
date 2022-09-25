@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <a href="{f:uri.action(action:'index')}" class="btn btn-primary">Index</a>
+        <a href="{f:uri.action(action:'index', controller:'Tree')}" class="btn btn-primary">Tree</a>
+        <button type="button" class="btn btn-primary">Primary</button>
+    </div>
+    <div class="row">
+        <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
+            <textarea name="textCategoryTree"></textarea>
+            <f:form.submit name="sumbit" value="Envoyer" class="submit"/>
+        </f:form>
+    </div>
+</div>
+
+<style>
+    textarea {
+        white-space: pre-wrap;
+    }
+</style>
+
+<script defer>
+    const textarea = document.querySelector('textarea')
+
+    textarea.addEventListener('keydown', (e) => {
+        if (e.code === "Tab") {
+            e.preventDefault()
+
+            textarea.setRangeText(
+                '\t',
+                textarea.selectionStart,
+                textarea.selectionStart,
+                'end'
+            )
+            console.log(textarea.value)
+        }
+    })
+
+    // content
+    const submit = document.querySelector('.submit')
+    submit.addEventListener('click', (e) => {
+
+        let testValues = {
+            0: "parent1\n\tenfant1\n\t\tsousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
+            1: "parent1\n\tenfant1\n\t\tsousenfant1\n\t\t\tsoussousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4"
+        }
+
+        textarea.value = testValues[1]
+        textarea.value = JSON.stringify(textarea.value)
+    })
+</script>
+
+</body>
+</html>
