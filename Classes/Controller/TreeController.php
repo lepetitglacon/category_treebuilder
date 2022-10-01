@@ -6,15 +6,9 @@ namespace Petitglacon\CategorytreeBuilder\Controller;
 
 
 use JetBrains\PhpStorm\ArrayShape;
-
-/**
- * This file is part of the "CategoryTree Builder" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * (c) 2022 
- */
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
  * TreeController
@@ -24,7 +18,7 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * @var int
      */
-    private int $uidCounter = 0;
+    private int $uidCounter = 1;
 
     /**
      * @var array
@@ -43,63 +37,121 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_category');
+        $result = $queryBuilder
+            ->select('uid', 'title', 'parent')
+            ->from('sys_category')
+            ->executeQuery();
+        $arr = $result->fetchAllAssociative();
+
+
+        $new = [];
+        foreach ($arr as $a){
+            $new[$a['parent']][] = $a;
+        }
+        $tree = $this->createTree($new, array($arr[0]));
+
+        $this->view->assignMultiple([
+            "tree" => $tree,
+            "jsonTree" => json_encode($tree)
+        ]);
         return $this->htmlResponse();
     }
 
-    /**
-     * action index
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function buildAction(): \Psr\Http\Message\ResponseInterface
+    public function createTree(&$list, $parent): array
     {
+        $tree = array();
+        foreach ($parent as $k=>$l){
+            if(isset($list[$l['uid']])){
+                $l['children'] = $this->createTree($list, $list[$l['uid']]);
+            }
+            $tree[] = $l;
+        }
+        return $tree;
+    }
 
-        // $args = $this->request->getArguments();
+    /**
+     * @return \Psr\Http\Message\ResponseInterface|void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     */
+    public function buildAction()
+    {
+        $returnArray = [];
+        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+        $rootPid = StringUtility::getUniqueId("NEW");
         $args = $_POST;
 
         if (isset($args["textCategoryTree"])) {
-            $textCategoryTree = $args["textCategoryTree"];
-                $parents = [];
-                $lastTabCount = 0;
-                foreach(explode("\\n", $textCategoryTree) as $line) {
 
-                    // if root parent
-                    if (substr_count($line, "\\t") == 0) {
-                        $category = $this->createCategory(0, $this->uidCounter, $line);
-                        $this->addParent($category, 0);
-                        $this->addCategoryToTree($parents);
-                        $this->addUidCount();
-                        $lastTabCount = 0;
-                        continue;
-                    }
+            $categoryTreeFromForm = str_replace("\"", "", $args["textCategoryTree"]);
+            $data = [];
+            $categoriesPid = isset($args["pid"]) ?? 3;
 
-                    // count \t
-                    if ($tabsCount = substr_count($line, "\\t")) {
-                        // \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(["tabcount" => $tabsCount, "lasttabcount" => $lastTabCount, "parent" => $parent, "line" => $line]);
+            foreach(explode("\\n", $categoryTreeFromForm) as $lineCount => $line) {
 
-                        $category = $this->createCategory($parents[$tabsCount]["uid"], $this->uidCounter, $line);
-                        $this->addCategoryToTree($category);
-                        $this->addParent($category, $tabsCount);
-                        $this->addUidCount();
-                        $lastTabCount = $tabsCount;
-                    }
+                if (empty($line)) {
+                    $returnArray["errors"][] = "Line $lineCount is empty";
+                    break;
                 }
 
-                \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->tree);
+                $tabsCount = substr_count($line, "\\t");
 
-            exit;
+                // if category parent is root
+                if (substr_count($line, "\\t") == 0) {
+                    $category = $this->createCategory($rootPid, StringUtility::getUniqueId("NEW"), $line);
+                }
+
+                // else count tabs (\t)
+                if ($tabsCount > 0) {
+                    // \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(["tabcount" => $tabsCount, "lasttabcount" => $lastTabCount, "parent" => $parent, "line" => $line]);
+                    $category = $this->createCategory($this->parents[$tabsCount-1]["uid"], StringUtility::getUniqueId("NEW"), $line);
+                }
+
+                $this->addParent($category, $tabsCount);
+                $this->addCategoryToTree($category);
+                $this->addUidCount();
+            }
+
+            // truncate table
+            GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable('sys_category')
+                ->truncate('sys_category');
+
+            foreach ($this->tree as $uid => $category) {
+                $data['sys_category'][$uid] = [
+                    "parent" => $category['pid'],
+                    "title" => $category["title"],
+                    "pid" => $categoriesPid
+                ];
+            }
+
+            $dataHandler->start($data, []);
+            $dataHandler->process_datamap();
+
+            if ($dataHandler->errorLog !== []) {
+                \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump('Error(s) while creating categories');
+                foreach ($dataHandler->errorLog as $log) {
+                    \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($log);
+                }
+            }
+
+
         } else {
             $this->addFlashMessage("No categories");
             return $this->htmlResponse();
         }
 
-        return $this->htmlResponse();
+        $this->view->assignMultiple([
+            "title" => "titre"
+        ]);
+
+        $this->redirect("index");
     }
 
     #[ArrayShape(["pid" => "", "uid" => "", "title" => ""])]
     private function createCategory($pid, $uid, $title): array
     {
-        return ["pid" => $pid, "uid" => $uid, "title" => $title];
+        return ["pid" => $pid, "uid" => $uid, "title" => str_replace(["\\t", "\""], [""], $title)];
     }
 
     private function addUidCount() {
@@ -107,16 +159,16 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     private function addCategoryToTree($category) {
-        $this->tree[$this->uidCounter] = $category;
+        $this->tree[$category["uid"]] = $category;
     }
 
     private function addParent($category, $tabCount) {
+
+        // reset parent array
         if ($tabCount == 0) {
-            $this->parents = [];
+            $this->parents[$tabCount] = $category;
         }
-        if (count($this->parents) < 1) {
-            $this->parents[0] = [];
-        }
+
         $this->parents[$tabCount] = $category;
     }
 }

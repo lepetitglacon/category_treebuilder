@@ -30,6 +30,30 @@ class CategoryController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      */
     public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
+
+        $tree = [];
+        $tree[0] = [
+            "uid" => 0,
+            "title" => "CategoryRoot",
+            "parent" => null
+        ];
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_category');
+        $result = $queryBuilder
+            ->select('uid', 'title', 'parent')
+            ->from('sys_category')
+            ->executeQuery();
+        $arr = $result->fetchAllAssociative();
+
+        $new = array();
+        foreach ($arr as $a){
+            $new[$a['parent']][] = $a;
+        }
+        $tree = $this->createTree($new, array($arr[0]));
+
+        $this->view->assign('tree', $tree);
+
+
         return $this->htmlResponse();
     }
 

@@ -1,64 +1,195 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
+<f:layout name="Backend/Default"/>
 
-<div class="container">
-    <div class="row">
-        <a href="{f:uri.action(action:'index')}" class="btn btn-primary">Index</a>
-        <a href="{f:uri.action(action:'index', controller:'Tree')}" class="btn btn-primary">Tree</a>
-        <button type="button" class="btn btn-primary">Primary</button>
+<f:section name="content">
+    <input id="hiddenTreeJson" type="text" value="{jsonTree}" class="hidden">
+
+    <div class="container">
+        <div class="row">
+            <a href="{f:uri.action(action:'index')}" class="btn btn-primary">Index</a>
+            <a href="{f:uri.action(action:'index', controller:'Tree')}" class="btn btn-primary">Tree</a>
+            <button type="button" class="btn btn-primary">Primary</button>
+        </div>
+        <div class="row">
+            <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
+                <label>
+                    Tree
+                    <textarea name="textCategoryTree"></textarea>
+                </label>
+                <label>
+                    Pid
+                    <input type="number" name="pid"/>
+                </label>
+                <f:form.submit name="sumbit" value="Envoyer" class="submit"/>
+            </f:form>
+        </div>
+        <div>
+
+            <ul id="myUL">
+
+            <f:render section="list" arguments="{category:tree.0}"/>
+
+            </ul>
+        </div>
     </div>
-    <div class="row">
-        <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
-            <textarea name="textCategoryTree"></textarea>
-            <f:form.submit name="sumbit" value="Envoyer" class="submit"/>
-        </f:form>
-    </div>
-</div>
 
-<style>
-    textarea {
-        white-space: pre-wrap;
-    }
-</style>
+    <style>
+        textarea {
+            white-space: pre-wrap;
+        }
+    </style>
 
-<script defer>
-    const textarea = document.querySelector('textarea')
+    <script defer>
+        const textarea = document.querySelector('textarea')
 
-    textarea.addEventListener('keydown', (e) => {
-        if (e.code === "Tab") {
-            e.preventDefault()
+        textarea.addEventListener('keydown', (e) => {
+            if (e.code === "Tab") {
+                e.preventDefault()
 
+                textarea.setRangeText(
+                    '\t',
+                    textarea.selectionStart,
+                    textarea.selectionStart,
+                    'end'
+                )
+                console.log(textarea.value)
+            }
+        })
+
+        let treeJson = JSON.parse(document.getElementById("hiddenTreeJson").value)
+        console.log(treeJson)
+
+
+
+        function addTab() {
             textarea.setRangeText(
                 '\t',
                 textarea.selectionStart,
                 textarea.selectionStart,
                 'end'
             )
-            console.log(textarea.value)
-        }
-    })
-
-    // content
-    const submit = document.querySelector('.submit')
-    submit.addEventListener('click', (e) => {
-
-        let testValues = {
-            0: "parent1\n\tenfant1\n\t\tsousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
-            1: "parent1\n\tenfant1\n\t\tsousenfant1\n\t\t\tsoussousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4"
         }
 
-        textarea.value = testValues[1]
-        textarea.value = JSON.stringify(textarea.value)
-    })
-</script>
+        function addReturn() {
+            textarea.setRangeText(
+                '\n',
+                textarea.selectionStart,
+                textarea.selectionStart,
+                'end'
+            )
+        }
 
-</body>
-</html>
+        // content
+        const submit = document.querySelector('.submit')
+        submit.addEventListener('click', (e) => {
+
+            let testValues = {
+                0: "parent1\n\tenfant1\n\t\tsousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
+                1: "parent1\n\tenfant1\n\t\tsousenfant1\n\t\t\tsoussousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
+                2: "Catégories éditoriales\n" +
+                    "\tÀ la une\n" +
+                    "\t\tActualités\n" +
+                    "\t\tAgenda\n" +
+                    "\tCatégories pour les tests\n" +
+                    "\t\tTest\n" +
+                    "\tConsultation par profil\n" +
+                    "\t\tJe suis un étudiant\n" +
+                    "\t\tJe suis un nouvel arrivant\n" +
+                    "\t\tJe suis un senior\n" +
+                    "\t\tJe suis une famille\n" +
+                    "\tThématiques éditoriales\n" +
+                    "\t\tAménagements\n" +
+                    "\t\tAndromède\n" +
+                    "\t\tCentre\n" +
+                    "\t\tCoopération"
+            }
+
+            // debug values
+            // textarea.value = testValues[2]
+            textarea.value = JSON.stringify(textarea.value)
+        })
+
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function() {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+    </script>
+
+    <style>
+        textarea {
+            width: 90vw;
+            height: 50vh;
+        }
+
+        /* Remove default bullets */
+        ul, #myUL {
+            list-style-type: none;
+        }
+
+        /* Remove margins and padding from the parent ul */
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the caret/arrow */
+        .caret {
+            cursor: pointer;
+            user-select: none; /* Prevent text selection */
+        }
+
+        /* Create the caret/arrow with a unicode, and style it */
+        .caret::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+        .caret-down::before {
+            transform: rotate(90deg);
+        }
+
+        /* Hide the nested list */
+        .nested {
+            display: none;
+        }
+
+        /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+        .active {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</f:section>
+
+<f:section name="list">
+    <li><span class="caret">{category.title}</span>
+        <ul class="nested">
+
+            <f:if condition="{category.children -> f:count()}">
+                <f:for each="{category.children}" as="cat">
+                    <f:if condition="{cat.children -> f:count()}">
+                        <f:then>
+                            <f:render section="list" arguments="{category:cat}"></f:render>
+                        </f:then>
+                        <f:else>
+                            <li>{cat.title}</li>
+                        </f:else>
+                    </f:if>
+                </f:for>
+            </f:if>
+
+        </ul>
+    </li>
+</f:section>
+
+
