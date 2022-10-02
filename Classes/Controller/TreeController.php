@@ -9,6 +9,7 @@ use JetBrains\PhpStorm\ArrayShape;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\StringUtility;
+use TYPO3\CMS\Core\Page\PageRenderer;
 
 /**
  * TreeController
@@ -43,11 +44,17 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_category');
+        $queryBuilder->getRestrictions()->removeAll();
         $result = $queryBuilder
             ->select('uid', 'title', 'parent')
             ->from('sys_category')
             ->executeQuery();
         $arr = $result->fetchAllAssociative();
+
+        if (empty($arr)) {
+            $this->view->assign("info", "Aucune catégorie");
+            return $this->htmlResponse();
+        }
 
         $new = [];
         foreach ($arr as $a){
@@ -73,10 +80,6 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $cat = $array[$cat['parent']-1];
         }
         return $depth;
-    }
-
-    private function createTrees() {
-
     }
 
     private function createTree(&$list, $parents): array
@@ -116,7 +119,7 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
             $categoryTreeFromForm = str_replace("\"", "", $args["textCategoryTree"]);
             $data = [];
-            $categoriesPid = isset($args["pid"]) ?? 3;
+            $categoriesPid = 3;
 
             foreach(explode("\\n", $categoryTreeFromForm) as $lineCount => $line) {
 

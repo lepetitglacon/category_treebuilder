@@ -1,231 +1,250 @@
-<f:layout name="Backend/Default"/>
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true">
 
-<f:section name="content">
+    <f:layout name="Backend/Default"/>
 
-    <input id="hiddenTreeJson" type="text" value="{jsonTree}" class="hidden">
+    <f:section name="Content">
 
-    <div class="container">
-        <div class="row">
-            <a href="{f:uri.action(action:'index')}" class="btn btn-primary">Index</a>
-            <a href="{f:uri.action(action:'index', controller:'Tree')}" class="btn btn-primary">Tree</a>
-            <button type="button" class="btn btn-primary">Primary</button>
+        <input id="hiddenTreeJson" type="text" value="{jsonTree}" class="hidden">
+        <input id="info" type="text" value="{info}" class="hidden">
+
+        <div class="container-fluid">
+            <div class="container d-flex">
+
+                <div class="col">
+                    <div class="row">
+                        <h2>Category Tree Builder</h2>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
+                                <div class="mb-3">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Tree</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" name="textCategoryTree" rows="25"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exampleFormControlInput1" class="form-label">Categories parent directory (pid)</label>
+                                    <input type="number" class="form-control" id="exampleFormControlInput1" name="pid">
+                                </div>
+                                <f:form.submit name="sumbit" value="Envoyer" class="submit form-control"/>
+                            </f:form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="row">
+                        <h2>Category Tree Viewer</h2>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="container">
+                                <ul id="myUL" class="ml-2">
+                                    <f:for each="{tree}" as="treeRoot">
+                                        <f:render section="list" arguments="{category:treeRoot}"/>
+                                    </f:for>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-            <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
-                <label>
-                    Tree
-                    <textarea name="textCategoryTree"></textarea>
-                </label>
-                <label>
-                    Pid
-                    <input type="number" name="pid"/>
-                </label>
-                <f:form.submit name="sumbit" value="Envoyer" class="submit"/>
-            </f:form>
-        </div>
-        <div>
 
-            <ul id="myUL">
+        <script defer>
+            const textarea = document.querySelector('textarea')
 
-            <f:for each="{tree}" as="treeRoot">
-                <f:render section="list" arguments="{category:treeRoot}"/>
-            </f:for>
+            textarea.addEventListener('keydown', (e) => {
+                if (e.code === "Tab") {
+                    e.preventDefault()
 
+                    textarea.setRangeText(
+                        '\t',
+                        textarea.selectionStart,
+                        textarea.selectionStart,
+                        'end'
+                    )
+                    console.log(textarea.value)
+                }
+            })
 
-            </ul>
-        </div>
-    </div>
+            let treeJson = JSON.parse(document.getElementById("hiddenTreeJson").value)
 
-    <style>
-        textarea {
-            white-space: pre-wrap;
-        }
-    </style>
+            treeJson.forEach((tree) => {
+                addLine(tree)
+            })
 
-    <script defer>
-        const textarea = document.querySelector('textarea')
+            function addLine(category) {
+                // add tabs
+                if (category.depth !== undefined) {
+                    for (let i=0;i<category.depth;i++) {
+                        addTab()
+                    }
+                }
 
-        textarea.addEventListener('keydown', (e) => {
-            if (e.code === "Tab") {
-                e.preventDefault()
+                // text
+                textarea.setRangeText(
+                    category.title,
+                    textarea.selectionStart,
+                    textarea.selectionStart,
+                    'end'
+                )
 
+                addReturn()
+
+                if (category.children !== undefined) {
+                    if (category.children.length > 0) {
+                        for (let i=0;i<category.children.length;i++) {
+                            console.log("add " + category.children[i].title)
+                            addLine(category.children[i])
+                        }
+                    }
+                }
+
+            }
+
+            function addTab() {
                 textarea.setRangeText(
                     '\t',
                     textarea.selectionStart,
                     textarea.selectionStart,
                     'end'
                 )
-                console.log(textarea.value)
             }
-        })
 
-        let treeJson = JSON.parse(document.getElementById("hiddenTreeJson").value)
-        console.log(treeJson)
+            function addReturn() {
+                textarea.setRangeText(
+                    '\n',
+                    textarea.selectionStart,
+                    textarea.selectionStart,
+                    'end'
+                )
+            }
 
-        treeJson.forEach((tree) => {
-            addLine(tree)
-        })
+            // content
+            const submit = document.querySelector('.submit')
+            submit.addEventListener('click', (e) => {
 
-
-        function addLine(category) {
-            // add tabs
-            if (category.depth !== undefined) {
-                for (let i=0;i<category.depth;i++) {
-                    addTab()
+                let testValues = {
+                    0: "parent1\n\tenfant1\n\t\tsousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
+                    1: "parent1\n\tenfant1\n\t\tsousenfant1\n\t\t\tsoussousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
+                    2: "Catégories éditoriales\n" +
+                        "\tÀ la une\n" +
+                        "\t\tActualités\n" +
+                        "\t\tAgenda\n" +
+                        "\tCatégories pour les tests\n" +
+                        "\t\tTest\n" +
+                        "\tConsultation par profil\n" +
+                        "\t\tJe suis un étudiant\n" +
+                        "\t\tJe suis un nouvel arrivant\n" +
+                        "\t\tJe suis un senior\n" +
+                        "\t\tJe suis une famille\n" +
+                        "\tThématiques éditoriales\n" +
+                        "\t\tAménagements\n" +
+                        "\t\tAndromède\n" +
+                        "\t\tCentre\n" +
+                        "\t\tCoopération"
                 }
+                // debug values
+                // textarea.value = testValues[2]
+
+                textarea.value = JSON.stringify(textarea.value)
+            })
+
+            var toggler = document.getElementsByClassName("cat-caret");
+            var i;
+
+            for (i = 0; i < toggler.length; i++) {
+                toggler[i].addEventListener("click", function() {
+                    this.parentElement.querySelector(".cat-nested").classList.toggle("cat-active");
+                    this.classList.toggle("caret-down");
+                });
             }
 
-            // text
-            textarea.setRangeText(
-                category.title,
-                textarea.selectionStart,
-                textarea.selectionStart,
-                'end'
-            )
+            let info = document.getElementById("info").value
+            if (info.length > 0) {
+                textarea.value = info
+            }
+        </script>
 
-            addReturn()
-
-            if (category.children !== undefined) {
-                if (category.children.length > 0) {
-                    for (let i=0;i<category.children.length;i++) {
-                        console.log("add " + category.children[i].title)
-                        addLine(category.children[i])
-                    }
-                }
+        <style>
+            textarea {
+                width: 50vw;
+                height: 50vh;
             }
 
-        }
-
-        function addTab() {
-            textarea.setRangeText(
-                '\t',
-                textarea.selectionStart,
-                textarea.selectionStart,
-                'end'
-            )
-        }
-
-        function addReturn() {
-            textarea.setRangeText(
-                '\n',
-                textarea.selectionStart,
-                textarea.selectionStart,
-                'end'
-            )
-        }
-
-        // content
-        const submit = document.querySelector('.submit')
-        submit.addEventListener('click', (e) => {
-
-            let testValues = {
-                0: "parent1\n\tenfant1\n\t\tsousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
-                1: "parent1\n\tenfant1\n\t\tsousenfant1\n\t\t\tsoussousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
-                2: "Catégories éditoriales\n" +
-                    "\tÀ la une\n" +
-                    "\t\tActualités\n" +
-                    "\t\tAgenda\n" +
-                    "\tCatégories pour les tests\n" +
-                    "\t\tTest\n" +
-                    "\tConsultation par profil\n" +
-                    "\t\tJe suis un étudiant\n" +
-                    "\t\tJe suis un nouvel arrivant\n" +
-                    "\t\tJe suis un senior\n" +
-                    "\t\tJe suis une famille\n" +
-                    "\tThématiques éditoriales\n" +
-                    "\t\tAménagements\n" +
-                    "\t\tAndromède\n" +
-                    "\t\tCentre\n" +
-                    "\t\tCoopération"
+            /* Remove default bullets */
+            ul, #myUL {
+                list-style-type: none;
             }
-            // debug values
-            // textarea.value = testValues[2]
 
-            textarea.value = JSON.stringify(textarea.value)
-        })
+            /* Remove margins and padding from the parent ul */
+            #myUL {
+                margin: 0;
+                padding: 0;
+            }
 
-        var toggler = document.getElementsByClassName("caret");
-        var i;
+            /* Style the caret/arrow */
+            .cat-caret {
+                cursor: pointer;
+                user-select: none; /* Prevent text selection */
+            }
 
-        for (i = 0; i < toggler.length; i++) {
-            toggler[i].addEventListener("click", function() {
-                this.parentElement.querySelector(".nested").classList.toggle("active");
-                this.classList.toggle("caret-down");
-            });
-        }
-    </script>
+            /* Create the caret/arrow with a unicode, and style it */
+            .cat-caret::before {
+                content: "\25B6";
+                color: black;
+                display: inline-block;
+                margin-right: 6px;
+            }
 
-    <style>
-        textarea {
-            width: 90vw;
-            height: 50vh;
-        }
+            /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+            .caret-down::before {
+                transform: rotate(90deg);
+            }
 
-        /* Remove default bullets */
-        ul, #myUL {
-            list-style-type: none;
-        }
+            /* Hide the nested list */
+            .cat-nested {
+                display: none;
+            }
 
-        /* Remove margins and padding from the parent ul */
-        #myUL {
-            margin: 0;
-            padding: 0;
-        }
+            /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+            .cat-active {
+                display: block;
+            }
 
-        /* Style the caret/arrow */
-        .caret {
-            cursor: pointer;
-            user-select: none; /* Prevent text selection */
-        }
+            .hidden {
+                display: none;
+            }
 
-        /* Create the caret/arrow with a unicode, and style it */
-        .caret::before {
-            content: "\25B6";
-            color: black;
-            display: inline-block;
-            margin-right: 6px;
-        }
+            .cat-icon, .icon-color {
+                width: 16px;
+                height: 16px;
+            }
+        </style>
+    </f:section>
 
-        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
-        .caret-down::before {
-            transform: rotate(90deg);
-        }
+    <f:section name="list">
+        <li><span class="cat-caret"><span class="cat-icon"><core:icon identifier="mimetypes-x-sys_category"/></span> {category.title}</span>
+            <ul class="cat-nested">
 
-        /* Hide the nested list */
-        .nested {
-            display: none;
-        }
+                <f:if condition="{category.children -> f:count()}">
+                    <f:for each="{category.children}" as="cat">
+                        <f:if condition="{cat.children -> f:count()}">
+                            <f:then>
+                                <f:render section="list" arguments="{category:cat}"></f:render>
+                            </f:then>
+                            <f:else>
+                                <li><span class="cat-icon"><core:icon identifier="mimetypes-x-sys_category"/></span> {cat.title}</li>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                </f:if>
 
-        /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
-        .active {
-            display: block;
-        }
+            </ul>
+        </li>
+    </f:section>
 
-        .hidden {
-            display: none;
-        }
-    </style>
-</f:section>
-
-<f:section name="list">
-    <li><span class="caret">{category.title}</span>
-        <ul class="nested">
-
-            <f:if condition="{category.children -> f:count()}">
-                <f:for each="{category.children}" as="cat">
-                    <f:if condition="{cat.children -> f:count()}">
-                        <f:then>
-                            <f:render section="list" arguments="{category:cat}"></f:render>
-                        </f:then>
-                        <f:else>
-                            <li>{cat.title}</li>
-                        </f:else>
-                    </f:if>
-                </f:for>
-            </f:if>
-
-        </ul>
-    </li>
-</f:section>
-
-
+</html>
