@@ -18,7 +18,12 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * @var int
      */
-    private int $uidCounter = 1;
+    private int $depthCounter = 0;
+
+    /**
+     * @var int
+     */
+    private int $uidCounter = 0;
 
     /**
      * @var array
@@ -44,12 +49,14 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             ->executeQuery();
         $arr = $result->fetchAllAssociative();
 
-
         $new = [];
         foreach ($arr as $a){
+            $this->depthCounter = 0;
+            $a['depth'] = $this->findDepth($a, $arr);
             $new[$a['parent']][] = $a;
         }
-        $tree = $this->createTree($new, array($arr[0]));
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($new);
+        $tree = $this->createTree($new, $new[0]);
 
         $this->view->assignMultiple([
             "tree" => $tree,
@@ -58,16 +65,41 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         return $this->htmlResponse();
     }
 
-    public function createTree(&$list, $parent): array
+    private function findDepth($category, $array): int
     {
-        $tree = array();
-        foreach ($parent as $k=>$l){
-            if(isset($list[$l['uid']])){
-                $l['children'] = $this->createTree($list, $list[$l['uid']]);
+        $depth = 0;
+        $cat = $category;
+        while (!empty($cat['parent'])) {
+            $depth++;
+            $cat = $array[$cat['parent']-1];
+        }
+        return $depth;
+    }
+
+    private function createTrees() {
+
+    }
+
+    private function createTree(&$list, $parents): array
+    {
+        $tree = [];
+        foreach ($parents as $key => $category){
+            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($key);
+            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($category);
+            if(isset($list[$category['uid']])){
+                $category['children'] = $this->createTree($list, $list[$category['uid']]);
             }
-            $tree[] = $l;
+            $tree[] = $category;
         }
         return $tree;
+    }
+
+    private function addDepth() {
+        $this->depthCounter++;
+    }
+
+    private function addUidCount() {
+        $this->uidCounter++;
     }
 
     /**
@@ -152,10 +184,6 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     private function createCategory($pid, $uid, $title): array
     {
         return ["pid" => $pid, "uid" => $uid, "title" => str_replace(["\\t", "\""], [""], $title)];
-    }
-
-    private function addUidCount() {
-        $this->uidCounter++;
     }
 
     private function addCategoryToTree($category) {

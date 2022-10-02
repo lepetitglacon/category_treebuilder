@@ -1,6 +1,7 @@
 <f:layout name="Backend/Default"/>
 
 <f:section name="content">
+
     <input id="hiddenTreeJson" type="text" value="{jsonTree}" class="hidden">
 
     <div class="container">
@@ -57,8 +58,36 @@
 
         let treeJson = JSON.parse(document.getElementById("hiddenTreeJson").value)
         console.log(treeJson)
+        addLine(treeJson[0])
 
+        function addLine(category) {
+            // add tabs
+            if (category.depth !== undefined) {
+                for (let i=0;i<category.depth;i++) {
+                    addTab()
+                }
+            }
 
+            // text
+            textarea.setRangeText(
+                category.title,
+                textarea.selectionStart,
+                textarea.selectionStart,
+                'end'
+            )
+
+            addReturn()
+
+            if (category.children !== undefined) {
+                if (category.children.length > 0) {
+                    for (let i=0;i<category.children.length;i++) {
+                        console.log("add " + category.children[i].title)
+                        addLine(category.children[i])
+                    }
+                }
+            }
+
+        }
 
         function addTab() {
             textarea.setRangeText(
