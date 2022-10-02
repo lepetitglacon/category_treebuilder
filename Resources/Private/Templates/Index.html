@@ -27,7 +27,10 @@
 
             <ul id="myUL">
 
-            <f:render section="list" arguments="{category:tree.0}"/>
+            <f:for each="{tree}" as="treeRoot">
+                <f:render section="list" arguments="{category:treeRoot}"/>
+            </f:for>
+
 
             </ul>
         </div>
@@ -58,7 +61,11 @@
 
         let treeJson = JSON.parse(document.getElementById("hiddenTreeJson").value)
         console.log(treeJson)
-        addLine(treeJson[0])
+
+        treeJson.forEach((tree) => {
+            addLine(tree)
+        })
+
 
         function addLine(category) {
             // add tabs
@@ -131,9 +138,9 @@
                     "\t\tCentre\n" +
                     "\t\tCoopération"
             }
-
             // debug values
             // textarea.value = testValues[2]
+
             textarea.value = JSON.stringify(textarea.value)
         })
 

@@ -55,7 +55,6 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $a['depth'] = $this->findDepth($a, $arr);
             $new[$a['parent']][] = $a;
         }
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($new);
         $tree = $this->createTree($new, $new[0]);
 
         $this->view->assignMultiple([
@@ -84,8 +83,8 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     {
         $tree = [];
         foreach ($parents as $key => $category){
-            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($key);
-            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($category);
+//            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($category, "category");
+//            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(isset($list[$category['uid']]), "in list");
             if(isset($list[$category['uid']])){
                 $category['children'] = $this->createTree($list, $list[$category['uid']]);
             }
