@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="EXT:categorytree_builder/Resources/Private/Language/locallang_db.xlf" date="2022-09-18T09:29:54Z" product-name="categorytree_builder">
+	<file source-language="en" datatype="plaintext" original="EXT:category_treebuilder/Resources/Private/Language/locallang_db.xlf" date="2022-09-18T09:29:54Z" product-name="category_treebuilder">
 		<header/>
 		<body>
 			<trans-unit id="tx_categorytreebuilder_domain_model_category" resname="tx_categorytreebuilder_domain_model_category">

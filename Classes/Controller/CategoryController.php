@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Petitglacon\CategorytreeBuilder\Controller;
+namespace Petitglacon\CategoryTreebuilder\Controller;
 
  use TYPO3\CMS\Core\Utility\GeneralUtility;
  use TYPO3\CMS\Core\Database\ConnectionPool;

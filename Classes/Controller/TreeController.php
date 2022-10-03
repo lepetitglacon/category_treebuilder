@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Petitglacon\CategorytreeBuilder\Controller;
+namespace Petitglacon\CategoryTreebuilder\Controller;
 
 
 use JetBrains\PhpStorm\ArrayShape;

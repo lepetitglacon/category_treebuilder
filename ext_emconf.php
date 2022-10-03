@@ -1,10 +1,10 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'CategoryTree Builder',
-    'description' => 'creates category tree from text indented file',
+    'title' => 'Category TreeBuilder',
+    'description' => 'creates category tree from indented text file',
     'category' => 'plugin',
-    'author' => '',
+    'author' => 'petitglacon',
     'author_email' => '',
     'state' => 'alpha',
     'clearCacheOnLoad' => 0,

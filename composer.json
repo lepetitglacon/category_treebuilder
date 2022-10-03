@@ -1,7 +1,7 @@
 {
-    "name": "petitglacon/categorytree-builder",
+    "name": "petitglacon/category-treebuilder",
     "type": "typo3-cms-extension",
-    "description": "creates category tree from text indented file",
+    "description": "create category tree from indented text file",
     "authors": [],
     "license": "GPL-2.0-or-later",
     "require": {
@@ -12,16 +12,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Petitglacon\\CategorytreeBuilder\\": "Classes"
+            "Petitglacon\\CategoryTreebuilder\\": "Classes"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Petitglacon\\CategorytreeBuilder\\Tests\\": "Tests"
+            "Petitglacon\\CategoryTreebuilder\\Tests\\": "Tests"
         }
     },
     "replace": {
-        "typo3-ter/categorytree-builder": "self.version"
+        "typo3-ter/category-treebuilder": "self.version"
     },
     "config": {
         "vendor-dir": ".Build/vendor",
@@ -36,7 +36,7 @@
         "typo3/cms": {
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
             "web-dir": ".Build/public",
-            "extension-key": "categorytree_builder"
+            "extension-key": "category_treebuilder"
         }
     }
 }

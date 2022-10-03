@@ -2,11 +2,11 @@
 module.tx_categorytreebuilder_builder {
     view {
         # cat=module.tx_categorytreebuilder_builder/file; type=string; label=Path to template root (BE)
-        templateRootPath = EXT:categorytree_builder/Resources/Private/Backend/Templates/
+        templateRootPath = EXT:category_treebuilder/Resources/Private/Backend/Templates/
         # cat=module.tx_categorytreebuilder_builder/file; type=string; label=Path to template partials (BE)
-        partialRootPath = EXT:categorytree_builder/Resources/Private/Backend/Partials/
+        partialRootPath = EXT:category_treebuilder/Resources/Private/Backend/Partials/
         # cat=module.tx_categorytreebuilder_builder/file; type=string; label=Path to template layouts (BE)
-        layoutRootPath = EXT:categorytree_builder/Resources/Private/Backend/Layouts/
+        layoutRootPath = EXT:category_treebuilder/Resources/Private/Backend/Layouts/
     }
     persistence {
         # cat=module.tx_categorytreebuilder_builder//a; type=string; label=Default storage PID

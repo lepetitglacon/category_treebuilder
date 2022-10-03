@@ -15,7 +15,7 @@ class BasicTest extends FunctionalTestCase
      * @var array
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/categorytree_builder',
+        'typo3conf/ext/category_treebuilder',
     ];
 
     /**

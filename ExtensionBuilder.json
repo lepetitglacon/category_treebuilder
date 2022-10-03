@@ -116,7 +116,7 @@
                 "description": "",
                 "key": "builder",
                 "mainModule": "tools",
-                "name": "CategoryTree Builder",
+                "name": "Category TreeBuilder",
                 "tabLabel": ""
             }
         ],
@@ -135,8 +135,8 @@
             "targetVersion": "11.5.0-11.5.99",
             "version": "1.0.0"
         },
-        "extensionKey": "categorytree_builder",
-        "name": "CategoryTree Builder",
+        "extensionKey": "category_treebuilder",
+        "name": "Category TreeBuilder",
         "originalExtensionKey": "",
         "originalVendorName": "",
         "persons": [],
