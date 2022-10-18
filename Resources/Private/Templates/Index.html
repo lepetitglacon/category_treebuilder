@@ -25,13 +25,14 @@
                             <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
                                 <div class="mb-3">
                                     <label for="exampleFormControlTextarea1" class="form-label">Tree</label>
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" name="textCategoryTree" rows="25"></textarea>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" name="textCategoryTree" rows="25" placeholder="Root&#10;&#09;Child 1&#10;&#09;&#09;Grand children&#10;&#09;Child 2"></textarea>
                                 </div>
                                 <div class="mb-3">
                                     <label for="exampleFormControlInput1" class="form-label">Categories parent directory (pid)</label>
                                     <input type="number" class="form-control" id="exampleFormControlInput1" name="pid">
                                 </div>
                                 <f:form.submit name="sumbit" value="Envoyer" class="submit form-control btn btn-success"/>
+                                <a href="{f:uri.action(action:'export')}" class="submit form-control btn btn-success">Export to CSV</a>
                             </f:form>
                         </div>
                     </div>
@@ -152,8 +153,12 @@
                 }
                 // debug values
                 // textarea.value = testValues[2]
+                let val = textarea.value
+                    .replaceAll("    ","\t")
+                    .replaceAll("        ", "\t")
+                    .trim()
 
-                textarea.value = JSON.stringify(textarea.value)
+                textarea.value = JSON.stringify(val)
             })
 
             var toggler = document.getElementsByClassName("cat-caret");

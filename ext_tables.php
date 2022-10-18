@@ -8,7 +8,7 @@ defined('TYPO3') || die();
         'builder',
         '',
         [
-            \Petitglacon\CategoryTreebuilder\Controller\TreeController::class => 'index,build',
+            \Petitglacon\CategoryTreebuilder\Controller\TreeController::class => 'index,build,export',
         ],
         [
             'access' => 'user,group',
