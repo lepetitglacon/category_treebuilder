@@ -1,7 +1,11 @@
 # Category Tree Builder
-This Typo3 extension unable contributors to create the category tree from a `\t` indented text file
+Make category tree building simple
+
+## Main features
+- Built-in tab indented text builder
+- Category tree viewer
+- Import/export your category tree by `text`, `csv`, `json` file
 
 ## Roadmap
-- csv import/export
-- category persistence
+- category persistence 
 - folders handling
