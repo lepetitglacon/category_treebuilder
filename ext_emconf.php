@@ -2,7 +2,7 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Category TreeBuilder',
-    'description' => 'creates category tree from indented text file',
+    'description' => 'Makes category tree management easier for contributors. Adds csv import/export features as well as built-in text builder.',
     'category' => 'plugin',
     'author' => 'petitglacon',
     'author_email' => '',
