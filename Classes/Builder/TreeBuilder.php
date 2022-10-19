@@ -2,8 +2,9 @@
 
 namespace Petitglacon\CategoryTreebuilder\Builder;
 
-use Petitglacon\CategorytreeBuilder\Enum\FileType;
+use Petitglacon\CategoryTreebuilder\Import\ImporterCsv;
 use Petitglacon\CategoryTreebuilder\Import\ImporterText;
+use Petitglacon\CategoryTreebuilder\Enum\FileType;
 use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -31,7 +32,15 @@ class TreeBuilder
                 break;
 
             case FileType::CSV:
+                $importer = new ImporterCsv($content);
+                $categories = $importer->getCategories();
+                break;
+
             case FileType::JSON:
+                break;
+
+            case FileType::PASSTHRGOUH:
+                $categories = $content;
                 break;
         }
 
@@ -53,7 +62,7 @@ class TreeBuilder
             }
             return $this->createFrontendTreeNode($new, $new[0]);
         } else {
-            return false;
+            return [];
         }
     }
 

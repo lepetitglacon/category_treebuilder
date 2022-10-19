@@ -2,6 +2,9 @@
 
 namespace Petitglacon\CategoryTreebuilder\Manager;
 
+use DateTime;
+use Petitglacon\CategoryTreebuilder\Enum\FileType;
+use Petitglacon\CategoryTreebuilder\Object\Category;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Resource\DuplicationBehavior;
 use TYPO3\CMS\Core\Resource\File;
@@ -18,6 +21,7 @@ class FileManager
 
     protected const DIRECTORY_FOLDER_PATH = 'user_upload/category_treebuilder/';
     protected const FOLDER_PATH = 'fileadmin/user_upload/category_treebuilder/';
+    protected const FOLDER_IMPORT_PATH = 'fileadmin/user_upload/category_treebuilder/imports/';
     protected const CONFIG_FOLDER_PATH = 'Resources/Private/Configuration/';
 
     protected const FILTER_EXTENSION = 'json,csv';
@@ -135,30 +139,12 @@ class FileManager
     }
 
     /**
-     * @return array
-     * @throws \Exception
-     */
-    public function loadFieldTypes(): array
-    {
-        return $this->loadConfigFile(self::FIELD_TYPES_FILENAME);
-    }
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    public function loadDefaultFields(): array
-    {
-        return $this->loadConfigFile(self::DEFAULT_FIELDS_FILENAME);
-    }
-
-    /**
      * @param array $formData
      * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
      */
-    public function saveCSV($tree)
+    public function exportCSV($tree)
     {
-        $date = new \DateTime('now');
+        $date = new DateTime();
         $filename = $date->format('d_m_Y_H-i-s') . '---' . count($tree) . '.csv';
 
         $folder = $this->fileStorage->getFolder(self::DIRECTORY_FOLDER_PATH);
@@ -178,15 +164,53 @@ class FileManager
             foreach ($content as $row) {
                 fputcsv($file, $row);
             }
+            fclose($file);
         } catch (Exception $e) {
             \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($e->getMessage(), "error");
             exit;
         }
+    }
 
+    public function getCsvContent($filepath) {
+        $categories = [];
+        $row = 0;
+        if (($file = fopen($filepath, "r")) !== FALSE) {
+            while (($data = fgetcsv($file, 500, ",")) !== FALSE) {
+                if ($row !== 0) {
+                    $category = new Category($data[0], $data[1], $data[2], $data[3]);
+                    $categories[] = $category->toArray();
+                }
+                $row++;
+            }
+            fclose($file);
+        }
+        return $categories;
+    }
 
-        // get storage folder
+    public function saveExternalFile() {
+        $file = $_FILES['file'];
+        $tempfilename = $file['tmp_name'];
+        $filename = $file['name'];
+        $filepath = GeneralUtility::getFileAbsFileName(self::FOLDER_IMPORT_PATH) . $filename;
 
-//        $this->createFile($filepath, $content);
+        $this->createEmptyFile($filepath);
+
+        if (move_uploaded_file($tempfilename, $filepath)) {
+            return $filepath;
+        } else {
+            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump("error save external file", "");
+            exit;
+        }
+    }
+
+    public function createEmptyFile($absoluteFilepath) {
+        try {
+            $file = fopen($absoluteFilepath, 'w');
+            fclose($file);
+        } catch (\Exception $e) {
+            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($e->getMessage(), "error");
+            exit;
+        }
     }
 
     /**

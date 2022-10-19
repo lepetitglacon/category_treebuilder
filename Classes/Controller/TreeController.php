@@ -79,12 +79,28 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function buildAction()
     {
+        $this->fileManager->exportCSV($this->treeBuilder->buildExportTree());
         $this->treeBuilder->buildBackendTree($_POST, FileType::TEXT);
         $this->redirect('index');
     }
 
     public function exportAction() {
-        $this->fileManager->saveCSV($this->treeBuilder->buildExportTree());
+        $this->fileManager->exportCSV($this->treeBuilder->buildExportTree());
         $this->redirect('index');
+    }
+
+    public function importAction() {
+
+        if (isset($_FILES['file'])) {
+            if ($filepath = $this->fileManager->saveExternalFile()) {
+                $this->fileManager->exportCSV($this->treeBuilder->buildExportTree());
+                $this->treeBuilder->buildBackendTree($this->fileManager->getCsvContent($filepath), FileType::PASSTHRGOUH);
+            }
+        }
+        $this->redirect('index');
+    }
+
+    public function clearHistoryAction() {
+        // todo
     }
 }
