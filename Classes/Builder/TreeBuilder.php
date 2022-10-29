@@ -45,18 +45,25 @@ class TreeBuilder
         }
 
         if (count($categories)) {
-            $this->queryManager->truncate();
-            $this->queryManager->insertCategories($categories);
+//            $this->queryManager->truncate();
+            return $this->queryManager->insertOrUpdateCategories($categories);
         }
     }
 
     public function buildFrontendTree(): bool|array
     {
-        $dbCategories = $this->queryManager->getCategoriesFromDatabase();
+        $dbCategories[0] = ['uid' => 0];
+
+        foreach ($this->queryManager->getCategoriesForFrontend() as $cat) {
+            $dbCategories[$cat['uid']] = $cat;
+        }
 
         if (count($dbCategories)) {
             $new = [];
             foreach ($dbCategories as $a){
+                if ($a['uid'] == 0) {
+                    continue;
+                }
                 $a['depth'] = $this->findDepth($a, $dbCategories);
                 $new[$a['parent']][] = $a;
             }
@@ -70,8 +77,6 @@ class TreeBuilder
     {
         $tree = [];
         foreach ($parents as $key => $category){
-//            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($category, 'category');
-//            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(isset($list[$category['uid']]), 'in list');
             if(isset($list[$category['uid']])){
                 $category['children'] = $this->createFrontendTreeNode($list, $list[$category['uid']]);
             }
@@ -86,7 +91,7 @@ class TreeBuilder
         $cat = $category;
         while (!empty($cat['parent'])) {
             $depth++;
-            $cat = $array[$cat['parent']-1];
+            $cat = $array[$cat['parent']];
         }
         return $depth;
     }

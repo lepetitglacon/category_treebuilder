@@ -1,13 +1,33 @@
 <?php
 
-namespace Petitglacon\CategorytreeBuilder\Object;
+namespace Petitglacon\CategoryTreebuilder\Object;
 
 class Category
 {
+    /**
+     * @var int $parent
+     */
     protected $uid;
+
+    /**
+     * @var int $parent
+     */
     protected $pid;
+
+    /**
+     * @var int $parent
+     */
     protected $parent;
+
+    /**
+     * @var string $title
+     */
     protected $title;
+
+    /**
+     * @var bool $updated
+     */
+    protected $updated;
 
     /**
      * @param $uid
@@ -15,76 +35,93 @@ class Category
      * @param $parent
      * @param $title
      */
-    public function __construct($uid, $pid, $parent, $title)
+    public function __construct($uid, $pid, $parent, $title, $updated)
     {
         $this->uid = $uid;
         $this->pid = $pid;
         $this->parent = $parent;
         $this->title = $title;
+        $this->updated = $updated;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getUid()
+    public function getUid(): int
     {
         return $this->uid;
     }
 
     /**
-     * @param mixed $uid
+     * @param int $uid
      */
-    public function setUid($uid): void
+    public function setUid(int $uid): void
     {
         $this->uid = $uid;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getPid()
+    public function getPid(): int
     {
         return $this->pid;
     }
 
     /**
-     * @param mixed $pid
+     * @param int $pid
      */
-    public function setPid($pid): void
+    public function setPid(int $pid): void
     {
         $this->pid = $pid;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getParent()
+    public function getParent(): int
     {
         return $this->parent;
     }
 
     /**
-     * @param mixed $parent
+     * @param int $parent
      */
-    public function setParent($parent): void
+    public function setParent(int $parent): void
     {
         $this->parent = $parent;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
     /**
-     * @param mixed $title
+     * @param string $title
      */
-    public function setTitle($title): void
+    public function setTitle(string $title): void
     {
         $this->title = $title;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUpdated(): bool
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param bool $updated
+     */
+    public function setUpdated(bool $updated): void
+    {
+        $this->updated = $updated;
     }
 
     public function toArray() {

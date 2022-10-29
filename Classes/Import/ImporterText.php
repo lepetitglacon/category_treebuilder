@@ -6,10 +6,13 @@ use Petitglacon\CategoryTreebuilder\Object\Category;
 
 class ImporterText extends AbstractImporter
 {
+
     public function getCategories() : array|Category
     {
         /** @var array|Category $categories */
         $categories = [];
+        $this->uidCounter = $this->queryManager->getLastInsertedUid() + 1;
+
 
         if (isset($this->content['textCategoryTree'])) {
 
@@ -23,15 +26,31 @@ class ImporterText extends AbstractImporter
 
                 $tabsCount = substr_count($line, '\\t');
 
-                // if category parent is root
-                if (substr_count($line, '\\t') == 0) {
-                    $category = $this->createCategory($this->getUidCounter(), self::ROOT_PID,self::ROOT_PARENT, $line);
+                // get uid/title
+                $matches = [];
+                preg_match_all('/\[([0-9]*?)\]/', $line, $matches);
+                if (!empty($matches[1])) {
+                    $uid = (int)$matches[1][count($matches[1]) - 1];
+                    $title = trim(preg_replace('/\[[0-9]*?\](?! \[([0-9]*?)\])/', '', $line));
+                    $updated = true;
                 } else {
-                    $category = $this->createCategory($this->getUidCounter(), self::ROOT_PID, $this->parents[$tabsCount - 1]->getUid(), $line);
+                    $uid = $this->getUidCounter();
+                    $title = $line;
+                    $updated = false;
+                }
+                $title = trim(str_replace(['\\t', '\\', '"'], '', $title));
+
+                // get parent
+                if (substr_count($line, '\\t') == 0) {
+                    $parent = self::ROOT_PARENT;
+                } else {
+                    $parent = $this->parents[$tabsCount - 1]->getUid();
                 }
 
+                $category = new Category($uid, self::ROOT_PID, $parent, $title, $updated);
+
                 $this->addParent($category, $tabsCount);
-                $categories[] = $category->toArray();
+                $categories[] = $category;
             }
         }
         return $categories;

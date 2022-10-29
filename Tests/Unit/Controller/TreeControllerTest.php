@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Petitglacon\CategorytreeBuilder\Tests\Unit\Controller;
+namespace Petitglacon\CategoryTreebuilder\Tests\Unit\Controller;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\TestingFramework\Core\AccessibleObjectInterface;
@@ -15,14 +15,14 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
 class TreeControllerTest extends UnitTestCase
 {
     /**
-     * @var \Petitglacon\CategorytreeBuilder\Controller\TreeController|MockObject|AccessibleObjectInterface
+     * @var \Petitglacon\CategoryTreebuilder\Controller\TreeController|MockObject|AccessibleObjectInterface
      */
     protected $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->subject = $this->getMockBuilder($this->buildAccessibleProxy(\Petitglacon\CategorytreeBuilder\Controller\TreeController::class))
+        $this->subject = $this->getMockBuilder($this->buildAccessibleProxy(\Petitglacon\CategoryTreebuilder\Controller\TreeController::class))
             ->onlyMethods(['redirect', 'forward', 'addFlashMessage'])
             ->disableOriginalConstructor()
             ->getMock();

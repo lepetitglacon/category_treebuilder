@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Petitglacon\CategorytreeBuilder\Tests\Functional;
+namespace Petitglacon\CategoryTreebuilder\Tests\Functional;
 
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 

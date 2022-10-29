@@ -2,6 +2,7 @@
 
 namespace Petitglacon\CategoryTreebuilder\Import;
 
+use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
 use Petitglacon\CategoryTreebuilder\Object\Category;
 
 abstract class AbstractImporter
@@ -15,16 +16,21 @@ abstract class AbstractImporter
     protected $uidCounter = 1;
 
     /**
-     * @param $content
+     * @var QueryManager
+     */
+    protected QueryManager $queryManager;
+
+    /**
+     * @param QueryManager $queryManager
      */
     public function __construct($content)
     {
+        $this->queryManager = new QueryManager();
         $this->content = $content;
     }
 
-    protected function createCategory($uid, $pid, $parent, $title): Category
-    {
-        return new Category($uid, $pid, $parent, str_replace(['\\t', '\\', '"'], [''], $title));
+    public function setContent($content) {
+        $this->content = $content;
     }
 
     public abstract function getCategories(): array|Category;

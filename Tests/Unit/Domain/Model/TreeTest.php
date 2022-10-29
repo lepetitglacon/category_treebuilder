@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Petitglacon\CategorytreeBuilder\Tests\Unit\Domain\Model;
+namespace Petitglacon\CategoryTreebuilder\Tests\Unit\Domain\Model;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\TestingFramework\Core\AccessibleObjectInterface;
@@ -14,7 +14,7 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 class TreeTest extends UnitTestCase
 {
     /**
-     * @var \Petitglacon\CategorytreeBuilder\Domain\Model\Tree|MockObject|AccessibleObjectInterface
+     * @var \Petitglacon\CategoryTreebuilder\Domain\Model\Tree|MockObject|AccessibleObjectInterface
      */
     protected $subject;
 
@@ -23,7 +23,7 @@ class TreeTest extends UnitTestCase
         parent::setUp();
 
         $this->subject = $this->getAccessibleMock(
-            \Petitglacon\CategorytreeBuilder\Domain\Model\Tree::class,
+            \Petitglacon\CategoryTreebuilder\Domain\Model\Tree::class,
             ['dummy']
         );
     }

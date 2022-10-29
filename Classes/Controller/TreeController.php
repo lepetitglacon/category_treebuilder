@@ -80,7 +80,10 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     public function buildAction()
     {
         $this->fileManager->exportCSV($this->treeBuilder->buildExportTree());
-        $this->treeBuilder->buildBackendTree($_POST, FileType::TEXT);
+        $res = $this->treeBuilder->buildBackendTree($_POST, FileType::TEXT);
+
+        $this->addFlashMessage("inserted : ${res['insert']}, updated : ${res['update']}, deleted : ${res['delete']}", 'Results');
+
         $this->redirect('index');
     }
 

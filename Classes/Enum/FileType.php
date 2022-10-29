@@ -1,6 +1,6 @@
 <?php
 
-namespace Petitglacon\CategorytreeBuilder\Enum;
+namespace Petitglacon\CategoryTreebuilder\Enum;
 
 class FileType
 {
