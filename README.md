@@ -22,7 +22,7 @@ Then run :
 - realtime javascript tree
 
 ## Screenshot
-![category-tree](https://user-images.githubusercontent.com/58629249/198845504-bc3481ca-6d0f-48b5-b7a9-d07aff32f061.PNG)
+![category-tree](https://user-images.githubusercontent.com/58629249/198850999-4c7c9a0f-85ee-4c72-b9bf-7d3c4789262b.PNG)
 
 ## Infos
 This extension was made for the [Typo3](https://typo3.fr/) project, [TER repo](https://extensions.typo3.org/extension/category_treebuilder)
