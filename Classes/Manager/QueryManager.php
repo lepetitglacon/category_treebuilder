@@ -136,7 +136,7 @@ class QueryManager
 
     public function update($category) {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
-        $queryBuilder
+        return (int)$queryBuilder
             ->update(self::TABLE)
             ->where(
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($category['uid'], \PDO::PARAM_INT))
@@ -148,10 +148,11 @@ class QueryManager
     }
 
     public function bulkUpdate($arrayCategories) {
+        $return = 0;
         foreach ($arrayCategories as $cat) {
-            $this->update($cat);
+            $return += $this->update($cat);
         }
-        return 1;
+        return $return;
     }
 
     private function softDelete($categoryUids) {

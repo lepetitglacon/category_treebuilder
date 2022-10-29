@@ -8,6 +8,7 @@ use Petitglacon\CategoryTreebuilder\Builder\TreeBuilder;
 use Petitglacon\CategoryTreebuilder\Enum\FileType;
 use Petitglacon\CategoryTreebuilder\Manager\FileManager;
 use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\StringUtility;

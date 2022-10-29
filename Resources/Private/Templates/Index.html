@@ -11,61 +11,112 @@
         <input id="info" type="text" value="{info}" class="hidden">
 
         <div class="container-fluid">
-            <div class="container">
-                <div class="row d-flex">
-                    <a href="{f:uri.action(action:'export')}" class="btn btn-success">Export to CSV</a>
-                    <f:form action="import" controller="Tree" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="formFile" class="form-label">CSV file</label>
-                            <input class="form-control" type="file" id="formFile" name="file">
-                            <f:form.submit name="import" value="Import" class="submit form-control btn btn-success"/>
-                        </div>
-                    </f:form>
-                </div>
+            <div class="d-flex">
 
-                <div class="row d-flex">
-                    <div class="col">
-                        <div class="row">
-                            <h2>Category Tree Builder</h2>
-                            <p class="text-muted">
-                                Tab to indent children
-                            </p>
+                <div class="col-3">
+
+                    <div class="row">
+                        <div class="col-6">
+                            <h1>Category Tree Builder</h1>
+                            <p>Links</p>
+                            <ul class="list-group">
+                                <li><a class="list-group-item" href="https://github.com/lepetitglacon/category_treebuilder" target="_blank">See on Github</a></li>
+                                <li><a class="list-group-item" href="https://petitglacon.com" target="_blank">petitglacon.com</a></li>
+                            </ul>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
-                                    <div class="mb-3">
-                                        <label for="textarea" class="form-label">Tree</label>
-                                        <textarea class="form-control" id="textarea" name="textCategoryTree" rows="25" placeholder="Root&#10;&#09;Child 1&#10;&#09;&#09;Grand children&#10;&#09;Child 2"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlInput1" class="form-label">Categories parent directory (pid)</label>
-                                        <input type="number" class="form-control" id="exampleFormControlInput1" name="pid">
-                                    </div>
-                                    <f:form.submit name="submit" value="Envoyer" class="submit form-control btn btn-success" id="text-submit"/>
-                                </f:form>
-                            </div>
+                        <div class="col-6">
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="row">
-                            <h2>Category Tree Viewer</h2>
+                </div>
+
+                <div class="col-6">
+                    <div class="row d-flex">
+
+                        <f:comment><!-- Tree builder --></f:comment>
+                        <div class="col">
+                            <div class="row">
+                                <h2>Category Tree Builder</h2>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <f:form action="build" controller="Tree" enctype="application/x-www-form-urlencoded">
+                                        <div class="mb-3">
+                                            <textarea class="form-control" id="textarea" name="textCategoryTree" rows="25" placeholder="Root&#10;&#09;Child 1&#10;&#09;&#09;Grand children&#10;&#09;Child 2"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput1" class="form-label">Categories parent directory (pid)</label>
+                                            <input type="number" class="form-control" id="exampleFormControlInput1" name="pid">
+                                        </div>
+                                        <f:form.submit name="submit" value="Envoyer" class="submit form-control btn btn-success" id="text-submit"/>
+                                    </f:form>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="container">
-                                    <ul id="myUL" class="ml-2">
-                                        <f:for each="{tree}" as="treeRoot">
-                                            <f:render section="list" arguments="{category:treeRoot}"/>
-                                        </f:for>
-                                    </ul>
+
+                        <f:comment><!-- Tree viewer --></f:comment>
+                        <div class="col">
+                            <div class="row">
+                                <h2>Category Tree Viewer</h2>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="container">
+                                        <ul id="myUL" class="ml-2">
+                                            <f:for each="{tree}" as="treeRoot">
+                                                <f:render section="list" arguments="{category:treeRoot}"/>
+                                            </f:for>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="col-3">
+
+                    <h2>Import/Export</h2>
+
+                    <div class="row my-2">
+                        <h4>CSV</h4>
+
+                        <div class="col">
+                            <f:form action="import" controller="Tree" enctype="multipart/form-data">
+                                <input class="form-control" type="file" id="formFile" name="file">
+                                <f:form.submit name="import" value="Import" class="submit form-control btn btn-default"/>
+                            </f:form>
+                        </div>
+
+                        <div class="col">
+                            <a href="{f:uri.action(action:'export')}" class="btn btn-default">Export to CSV</a>
+                        </div>
+
+                    </div>
+
+                    <div class="row my-2">
+                        <h4>JSON</h4>
+
+                        <div class="col">
+                            <f:form action="import" controller="Tree" enctype="multipart/form-data">
+                                <input class="form-control" type="file" id="formFile" name="file" >
+                                <f:form.submit name="import" value="Import" class="submit form-control btn btn-default"/>
+                            </f:form>
+                        </div>
+
+                        <div class="col">
+                            <a href="{f:uri.action(action:'export')}" class="btn btn-default" >Export to JSON</a>
+                        </div>
+
+                    </div>
+
+
+                </div>
             </div>
+
+
+
+
+
         </div>
 
         <script defer>
@@ -101,7 +152,7 @@
 
                 // text
                 textarea.setRangeText(
-                    category.title,
+                    category.title + ' [' + category.uid + ']',
                     textarea.selectionStart,
                     textarea.selectionStart,
                     'end'
@@ -180,11 +231,8 @@
                     this.parentElement.querySelector(".cat-nested").classList.toggle("cat-active");
                     this.classList.toggle("caret-down");
                 });
-            }
-
-            let info = document.getElementById("info").value
-            if (info.length > 0) {
-                textarea.value = info
+                toggler[i].parentElement.querySelector(".cat-nested").classList.toggle("cat-active");
+                toggler[i].classList.toggle("caret-down");
             }
         </script>
 
