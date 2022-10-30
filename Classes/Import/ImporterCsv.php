@@ -2,11 +2,16 @@
 
 namespace Petitglacon\CategoryTreebuilder\Import;
 
+use Petitglacon\CategoryTreebuilder\Object\Category;
+
 class ImporterCsv extends AbstractImporter
 {
 
-    public function getCategories()
+    /**
+     * @return Category[]
+     */
+    public function getCategories() : Category
     {
-        $this->
+         return [new Category(0, 0, 0, 'bug category', false)];
     }
 }
