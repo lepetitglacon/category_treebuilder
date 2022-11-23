@@ -47,7 +47,14 @@ class ImporterText extends AbstractImporter
                     $parent = $this->parents[$tabsCount - 1]->getUid();
                 }
 
-                $category = new Category($uid, self::ROOT_PID, $parent, $title, $updated);
+                // set pid
+                if (isset($this->content['root-pid'])) {
+                    $pid = $this->content['root-pid'];
+                } else {
+                    $pid = self::ROOT_PID;
+                }
+
+                $category = new Category($uid, $pid, $parent, $title, $updated);
 
                 $this->addParent($category, $tabsCount);
                 $categories[] = $category;

@@ -8,7 +8,7 @@ use Petitglacon\CategoryTreebuilder\Object\Category;
 abstract class AbstractImporter
 {
     const ROOT_PARENT = 0;
-    const ROOT_PID = 3;
+    const ROOT_PID = 0;
 
     protected $content;
     protected $categories = [];
