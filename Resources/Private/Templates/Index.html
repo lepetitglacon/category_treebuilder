@@ -58,7 +58,7 @@
                             <div class="row">
                                 <h2>Category Tree Viewer</h2>
                             </div>
-                            <div class="row">
+                            <div id="treeViewerScroll" class="row">
                                 <div class="col">
                                     <div class="container">
                                         <ul id="myUL" class="ml-2">
@@ -121,7 +121,17 @@
 
         <script defer>
             const textarea = document.getElementById('textarea')
+            const treeViewerScroll = document.getElementById('treeViewerScroll')
 
+            // Auto scroll
+            textarea.addEventListener('scroll', (e) => {
+                treeViewerScroll.scrollTop = e.target.scrollTop
+            })
+            treeViewerScroll.addEventListener('scroll', (e) => {
+                textarea.scrollTop = e.target.scrollTop
+            })
+
+            // enable tab in textarea
             textarea.addEventListener('keydown', (e) => {
                 if (e.code === "Tab") {
                     e.preventDefault()
@@ -289,6 +299,11 @@
             .cat-icon, .icon-color {
                 width: 16px;
                 height: 16px;
+            }
+
+            #treeViewerScroll {
+                max-height: 50vh;
+                overflow-y: scroll;
             }
         </style>
     </f:section>
