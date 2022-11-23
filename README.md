@@ -23,12 +23,12 @@ Then run :
 - assuring quality (error handling, code optimisation, ...)
 - realtime javascript tree
 
-# Versions
-## 1.0.2
+## Versions
+### 1.0.2
 - You can now use the pid field to store categories where you want (still in 1 directory only)
 - Fixed csv import/export (located in `fileadmin/user_upload/category_treebuilder`)
 - Added an auto scroll on tree views
-## 1.0.1
+### 1.0.1
 - Beta testing
 
 ## Screenshot
