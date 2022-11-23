@@ -33,7 +33,7 @@ class QueryManager
     }
 
     /**
-     * @param array|Category $categories
+     * @param Category[] $categories
      * @return array
      */
     public function insertOrUpdateCategories(Category|array $categories): array

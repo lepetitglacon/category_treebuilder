@@ -151,10 +151,11 @@ class FileManager
         $filepath = GeneralUtility::getFileAbsFileName(self::FOLDER_PATH) . $filename;
 
         $content = [
-            ['uid', 'pid', 'parent', 'title']
+            ['uid', 'pid', 'parent', 'title', 'updated']
         ];
 
         foreach ($tree as $category) {
+            $category[] = 1;
             $content[] = $category;
         }
 
@@ -177,8 +178,8 @@ class FileManager
         if (($file = fopen($filepath, "r")) !== FALSE) {
             while (($data = fgetcsv($file, 500, ",")) !== FALSE) {
                 if ($row !== 0) {
-                    $category = new Category($data[0], $data[1], $data[2], $data[3]);
-                    $categories[] = $category->toArray();
+                    $category = new Category($data[0], $data[1], $data[2], $data[3], (bool)$data[4]);
+                    $categories[] = $category;
                 }
                 $row++;
             }

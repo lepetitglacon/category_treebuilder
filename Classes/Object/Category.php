@@ -35,7 +35,7 @@ class Category
      * @param $parent
      * @param $title
      */
-    public function __construct($uid, $pid, $parent, $title, $updated)
+    public function __construct($uid, $pid, $parent, $title, $updated = false)
     {
         $this->uid = $uid;
         $this->pid = $pid;
