@@ -2,6 +2,10 @@
 This extension makes category tree building simple.
 
 ## Install
+
+> :warning: Do not install this extension in production environnement !
+> This extension is still in development phase, it may ruin your category folder structure or delete all your categories :warning:
+
 Download the extension, put it in the "packages" folder.
 
 Then run :
@@ -13,8 +17,6 @@ Then run :
 - Category uid persistence (move categories without losing uids)
 - Import/export categories as ~~`text`~~, `csv`, ~~`json`~~ files
 - Auto export after each tree change (history)
-
-> :warning: Take care, this extension is still in development phase, it may ruin your category folder structure or delete all your categories
 
 ## Roadmap
 - toggle deleted categories view
