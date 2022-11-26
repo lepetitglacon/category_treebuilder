@@ -1,6 +1,9 @@
 # Category Tree Builder
 Build you're category tree with a built-in text editor and more.
 
+## Screenshot
+![category-tree](https://user-images.githubusercontent.com/58629249/198850999-4c7c9a0f-85ee-4c72-b9bf-7d3c4789262b.PNG)
+
 ## Install
 
 > :warning: Do not install this extension in production environnement !
@@ -32,9 +35,6 @@ Then run :
 - Added an auto scroll on tree views
 ### 1.0.1
 - Beta testing
-
-## Screenshot
-![category-tree](https://user-images.githubusercontent.com/58629249/198850999-4c7c9a0f-85ee-4c72-b9bf-7d3c4789262b.PNG)
 
 ## Infos
 This extension was made for the [Typo3](https://typo3.fr/) project, [TER repo](https://extensions.typo3.org/extension/category_treebuilder)
