@@ -1,5 +1,5 @@
 # Category Tree Builder
-This extension makes category tree building simple.
+Build you're category tree with a built-in text editor and more.
 
 ## Install
 
