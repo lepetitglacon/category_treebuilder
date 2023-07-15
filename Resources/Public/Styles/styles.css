@@ -1,0 +1,58 @@
+textarea {
+    width: 50vw;
+    height: 50vh;
+}
+
+/* Remove default bullets */
+ul, #myUL {
+    list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#myUL {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the caret/arrow */
+.cat-caret {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.cat-caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+    transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.cat-nested {
+    display: none;
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.cat-active {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.cat-icon, .icon-color {
+    width: 16px;
+    height: 16px;
+}
+
+#treeViewerScroll {
+    max-height: 50vh;
+    overflow-y: scroll;
+}

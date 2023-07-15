@@ -8,15 +8,16 @@ use Petitglacon\CategoryTreebuilder\Builder\TreeBuilder;
 use Petitglacon\CategoryTreebuilder\Enum\FileType;
 use Petitglacon\CategoryTreebuilder\Manager\FileManager;
 use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
-/**
- * TreeController
- */
+#[Controller]
 class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
     /**
@@ -52,7 +53,12 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * @param FileManager $fileManager
      */
-    public function __construct(FileManager $fileManager, TreeBuilder $treeBuilder)
+    public function __construct(
+        FileManager $fileManager,
+        TreeBuilder $treeBuilder,
+        protected readonly ModuleTemplateFactory $moduleTemplateFactory,
+        private readonly PageRenderer $pageRenderer,
+    )
     {
         $this->fileManager = $fileManager;
         $this->treeBuilder = $treeBuilder;
@@ -67,16 +73,26 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
         $tree = $this->treeBuilder->buildFrontendTree();
+
         $this->view->assignMultiple([
             'tree' => $tree,
             'jsonTree' => json_encode($tree)
         ]);
-        return $this->htmlResponse();
+
+
+        // Load JavaScript via PageRenderer
+        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder');
+        $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/Styles/styles.css');
+
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        // Adding title, menus, buttons, etc. using $moduleTemplate ...
+        $moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @return ResponseInterface
+     * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
      */
     public function buildAction()
     {
@@ -85,7 +101,7 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         $this->addFlashMessage("inserted : ${res['insert']}, updated : ${res['update']}, deleted : ${res['delete']}", 'Results');
 
-        $this->redirect('index');
+        return $this->redirect('index');
     }
 
     public function exportAction() {
