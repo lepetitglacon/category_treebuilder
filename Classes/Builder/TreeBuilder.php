@@ -58,7 +58,9 @@ class TreeBuilder
             $dbCategories[$cat['uid']] = $cat;
         }
 
-        if (count($dbCategories)) {
+        if (count($dbCategories) <= 1) {
+            return [];
+        } else {
             $new = [];
             foreach ($dbCategories as $a){
                 if ($a['uid'] == 0) {
@@ -68,8 +70,6 @@ class TreeBuilder
                 $new[$a['parent']][] = $a;
             }
             return $this->createFrontendTreeNode($new, $new[0]);
-        } else {
-            return [];
         }
     }
 

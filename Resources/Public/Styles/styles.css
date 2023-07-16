@@ -56,3 +56,25 @@ ul, #myUL {
     max-height: 50vh;
     overflow-y: scroll;
 }
+
+/*
+CUSTOM MENU
+ */
+#customMenu {
+    position: absolute;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    list-style-type: none;
+    display: none;
+    z-index: 999;
+}
+
+#customMenu li {
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+#customMenu li:hover {
+    background-color: #e4e4e4;
+}

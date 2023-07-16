@@ -79,13 +79,11 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             'jsonTree' => json_encode($tree)
         ]);
 
-
         // Load JavaScript via PageRenderer
         $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder');
         $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/Styles/styles.css');
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        // Adding title, menus, buttons, etc. using $moduleTemplate ...
         $moduleTemplate->setContent($this->view->render());
         return $this->htmlResponse($moduleTemplate->renderContent());
     }
@@ -99,7 +97,7 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $this->fileManager->exportCSV($this->treeBuilder->buildExportTree());
         $res = $this->treeBuilder->buildBackendTree($_POST, FileType::TEXT);
 
-        $this->addFlashMessage("inserted : ${res['insert']}, updated : ${res['update']}, deleted : ${res['delete']}", 'Results');
+        $this->addFlashMessage("inserted : {$res['insert']}, updated : {$res['update']}, deleted : {$res['delete']}", 'Results');
 
         return $this->redirect('index');
     }
