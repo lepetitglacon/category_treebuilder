@@ -21,48 +21,18 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
     /**
-     * @var int
-     */
-    private int $depthCounter = 0;
-
-    /**
-     * @var int
-     */
-    private int $uidCounter = 1;
-
-    /**
-     * @var array
-     */
-    private array $tree = [];
-
-    /**
-     * @var array
-     */
-    private array $parents = [];
-
-    /**
-     * @var FileManager $fileManager
-     */
-    private FileManager $fileManager;
-
-    /**
-     * @var TreeBuilder $treeBuilder
-     */
-    private TreeBuilder $treeBuilder;
-
-    /**
      * @param FileManager $fileManager
+     * @param TreeBuilder $treeBuilder
+     * @param ModuleTemplateFactory $moduleTemplateFactory
+     * @param PageRenderer $pageRenderer
      */
     public function __construct(
-        FileManager $fileManager,
-        TreeBuilder $treeBuilder,
+        private readonly FileManager             $fileManager,
+        private readonly TreeBuilder             $treeBuilder,
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
-        private readonly PageRenderer $pageRenderer,
+        private readonly PageRenderer            $pageRenderer,
     )
-    {
-        $this->fileManager = $fileManager;
-        $this->treeBuilder = $treeBuilder;
-    }
+    {}
 
 
     /**
@@ -80,7 +50,11 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         ]);
 
         // Load JavaScript via PageRenderer
-        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/core/ajax/ajax-request.js');
+        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/index.js');
+        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/Category.js');
+
+        // add css
         $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/Styles/styles.css');
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
