@@ -32,6 +32,12 @@ class QueryManager
         $this->connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::TABLE);
     }
 
+    private function getQueryBuilder() {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
+        $queryBuilder->getRestrictions()->removeAll();
+        return $queryBuilder;
+    }
+
     /**
      * @param Category[] $categories
      * @return array
@@ -107,7 +113,7 @@ class QueryManager
     }
 
     public function insertCategory(Category $category) {
-        return $this->queryBuilder
+        return $this->getQueryBuilder()
             ->insert(self::TABLE)
             ->values($category->toArray());
     }

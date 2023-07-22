@@ -21,6 +21,7 @@ export default class Category {
 
         this.li = document.createElement('li')
         this.li.innerText = this.title
+        this.li.dataset.title = this.title
         this.li.dataset.uid = this.uid
         this.li.dataset.pid = this.pid
         this.li.dataset.parent = this.parent
@@ -72,6 +73,8 @@ export default class Category {
                     break;
                 case 2:
                     // Show the custom menu at the mouse position
+                    this.tree.lastContextMenuCategory = e
+
                     this.tree.contextMenu.style.top = `${e.pageY}px`;
                     this.tree.contextMenu.style.left = `${e.pageX}px`;
                     this.tree.contextMenu.style.display = "block";

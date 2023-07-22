@@ -6,9 +6,10 @@
 <f:layout name="Backend/Default"/>
 <f:be.pagerenderer includeJavaScriptModules="{
          0: '@typo3/core/ajax/ajax-request.js',
-         1: 'sortablejs',
+         1: 'sortable',
          2: '@petitglacon/category-treebuilder/index.js',
          3: '@petitglacon/category-treebuilder/Category.js',
+         3: '@petitglacon/category-treebuilder/CategoryFormModal.js',
       }"/>
 <f:section name="Content">
 
@@ -41,30 +42,43 @@
         <li id="menuOption3">Add after</li>
     </ul>
 
+    <div id="categoryFormModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="categoryFormModal-modalTitle" class="modal-title">Modal title</h5>
+                    <button type="button" class="close categoryFormModalCloseButton" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryFormModal-form">
+                        <div class="form-group">
+                            <label for="categoryFormModal-formTitle">Title</label>
+                            <input type="text" class="form-control" id="categoryFormModal-formTitle">
+                        </div>
+                        <div class="form-group">
+                            <label for="categoryFormModal-formParent">Parent Category ID <span>(parent)</span></label>
+                            <input type="number" class="form-control" id="categoryFormModal-formParent">
+                        </div>
+                        <div class="form-group">
+                            <label for="categoryFormModal-formPid">Parent Directory ID <span>(pid)</span></label>
+                            <input type="number" class="form-control" id="categoryFormModal-formPid">
+                        </div>
+                        <div class="form-group">
+                            <label for="categoryFormModal-formUid">Unique ID <span>(uid)</span></label>
+                            <input type="number" class="form-control" id="categoryFormModal-formUid" disabled>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="categoryFormModal-formSubmit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary categoryFormModalCloseButton" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </f:section>
 
-
-
-
-
-
-<f:section name="list">
-    <li><span class="cat-caret"><span class="cat-icon"><core:icon identifier="mimetypes-x-sys_category"/></span>{category.title}</span>
-        <ul class="cat-nested">
-            <f:if condition="{category.children -> f:count()}">
-                <f:for each="{category.children}" as="cat">
-                    <f:if condition="{cat.children -> f:count()}">
-                        <f:then>
-                            <f:render section="list" arguments="{category:cat}"></f:render>
-                        </f:then>
-                        <f:else>
-                            <li><span class="cat-icon"><core:icon identifier="mimetypes-x-sys_category"/></span>{cat.title}
-                            </li>
-                        </f:else>
-                    </f:if>
-                </f:for>
-            </f:if>
-        </ul>
-    </li>
-</f:section>
 </html>

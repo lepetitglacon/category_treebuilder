@@ -1,7 +1,10 @@
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js'
 import Notification from "@typo3/backend/notification.js";
 import Category from '@petitglacon/category-treebuilder/Category.js'
+import CategoryFormModal from "@petitglacon/category-treebuilder/CategoryFormModal.js";
 import Sortable from 'sortablejs'
+
+console.log(Sortable)
 
 export default class CategoryTree {
 
@@ -16,6 +19,9 @@ export default class CategoryTree {
         this.treeContainer = document.getElementById('cat-tree-div')
         this.treeList = document.getElementById('cat-tree')
 
+        // category form
+        this.categoryFormModal = new CategoryFormModal()
+
         this.categories = new Map()
         this.categories.set(0, new Category({
             tree: this,
@@ -25,6 +31,8 @@ export default class CategoryTree {
             pid: 0,
             depth: 0
         }))
+
+        this.lastContextMenuCategory = {}
 
     }
 
@@ -46,7 +54,7 @@ export default class CategoryTree {
         const tree = JSON.parse(document.getElementById('jsonTreeInput').value)
         console.log('CTB - received tree', tree)
 
-        console.log('CTB - building tree', tree)
+        console.log('CTB - building tree')
         // build tree manually
         for (const category of tree) {
             this.categories.set(category.uid, new Category({
@@ -55,7 +63,6 @@ export default class CategoryTree {
             }))
         }
 
-
         const nestedSortables = document.getElementsByClassName('nested-sortable')
         for (let i = 0; i < nestedSortables.length; i++) {
             new Sortable(nestedSortables[i], {
@@ -63,18 +70,30 @@ export default class CategoryTree {
                 animation: 150,
                 fallbackOnBody: true,
                 swapThreshold: 0.65,
-                onEnd: (e) => {
-                    console.log(e);
+                onEnd: async (e) => {
+                    console.log(e.item);
 
-                    Notification.success('Category moved', e.item.dataset.title, 5)
+                    const categoryJson = {foo: 'bar'};
+                    const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_move).post(categoryJson, {
+                        headers: {
+                            'Content-Type': 'application/json; charset=utf-8'
+                        }
+                    });
+                    const {success, message} = await res.resolve();
+
+                    if (!success) {
+                        Notification.error('Category not moved', message, 5);
+                    } else {
+                        Notification.success('Category moved', e.item.dataset.title, 5)
+                    }
+
                 }
             });
         }
-        console.log('CTB - tree built', tree)
+        console.log('CTB - tree built')
     }
 
     initContextMenu() {
-
 
         // Prevent the default context menu from appearing
         document.addEventListener("click", (e) => {
@@ -92,7 +111,14 @@ export default class CategoryTree {
             console.log("Menu Option 1 selected");
         });
 
-        document.getElementById("menuOption2").addEventListener("click", () => {
+        document.getElementById("menuOption2").addEventListener("click", (e) => {
+            const parent = this.lastContextMenuCategory.target.parentElement ?? {}
+
+            this.categoryFormModal.show('Create category', {
+                parent: parent.dataset.uid,
+                pid: parent.dataset.pid
+            })
+
             console.log("Menu Option 2 selected");
         });
 
