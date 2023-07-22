@@ -1,192 +1,107 @@
-import $ from 'jquery'
+import AjaxRequest from '@typo3/core/ajax/ajax-request.js'
+import Notification from "@typo3/backend/notification.js";
+import Category from '@petitglacon/category-treebuilder/Category.js'
+import Sortable from 'sortablejs'
 
-export default class CategoryTreebuilder {
+export default class CategoryTree {
 
     constructor() {
-        console.log('hello')
 
-        this.textImporter = new TextImporter()
+        // utils
+        this.loaderDiv = document.getElementById('loader')
+        this.categoryImg = document.getElementById('category-img')
+        this.contextMenu = document.getElementById('customMenu')
 
-        this.$contextMenu = $('#customMenu')
+        // trees
+        this.treeContainer = document.getElementById('cat-tree-div')
+        this.treeList = document.getElementById('cat-tree')
+
+        this.categories = new Map()
+        this.categories.set(0, new Category({
+            tree: this,
+            title: 'Root',
+            parent: null,
+            uid: 0,
+            pid: 0,
+            depth: 0
+        }))
+
     }
 
+    async init() {
+        await this.initCategoryTree()
+        this.initContextMenu()
+        console.log('ready to build categories :)')
+    }
+
+    async initCategoryTree() {
+
+        // get tree by ajax
+        // const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_index).get()
+        // const {success, tree, message} = await res.resolve();
+        // if (!success) throw new Error('CTB - could not get categories from DB')
+        // console.log(res)
+
+        // get tree by input
+        const tree = JSON.parse(document.getElementById('jsonTreeInput').value)
+        console.log('CTB - received tree', tree)
+
+        console.log('CTB - building tree', tree)
+        // build tree manually
+        for (const category of tree) {
+            this.categories.set(category.uid, new Category({
+                tree: this,
+                ...category
+            }))
+        }
 
 
-}
+        const nestedSortables = document.getElementsByClassName('nested-sortable')
+        for (let i = 0; i < nestedSortables.length; i++) {
+            new Sortable(nestedSortables[i], {
+                group: 'nested',
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                onEnd: (e) => {
+                    console.log(e);
 
-class TextImporter {
-
-
-    constructor() {
-        const textarea = document.getElementById('textarea')
-        const treeViewerScroll = document.getElementById('treeViewerScroll')
-
-// Auto scroll
-        textarea.addEventListener('scroll', (e) => {
-            treeViewerScroll.scrollTop = e.target.scrollTop
-        })
-        treeViewerScroll.addEventListener('scroll', (e) => {
-            textarea.scrollTop = e.target.scrollTop
-        })
-
-// enable tab in textarea
-        textarea.addEventListener('keydown', (e) => {
-            if (e.code === "Tab") {
-                e.preventDefault()
-
-                textarea.setRangeText(
-                    '\t',
-                    textarea.selectionStart,
-                    textarea.selectionStart,
-                    'end'
-                )
-                console.log(textarea.value)
-            }
-        })
-
-        let treeJson = JSON.parse(document.getElementById("hiddenTreeJson").value)
-
-        treeJson.forEach((tree) => {
-            addLine(tree)
-        })
-
-        function addLine(category) {
-            // add tabs
-            if (category.depth !== undefined) {
-                for (let i=0;i<category.depth;i++) {
-                    addTab()
+                    Notification.success('Category moved', e.item.dataset.title, 5)
                 }
-            }
-
-            // text
-            textarea.setRangeText(
-                category.title + ' [' + category.uid + ']',
-                textarea.selectionStart,
-                textarea.selectionStart,
-                'end'
-            )
-
-            addReturn()
-
-            if (category.children !== undefined) {
-                if (category.children.length > 0) {
-                    for (let i=0;i<category.children.length;i++) {
-                        console.log("add " + category.children[i].title)
-                        addLine(category.children[i])
-                    }
-                }
-            }
-
-        }
-
-        function addTab() {
-            textarea.setRangeText(
-                '\t',
-                textarea.selectionStart,
-                textarea.selectionStart,
-                'end'
-            )
-        }
-
-        function addReturn() {
-            textarea.setRangeText(
-                '\n',
-                textarea.selectionStart,
-                textarea.selectionStart,
-                'end'
-            )
-        }
-
-// content
-        const submit = document.getElementById('text-submit')
-        submit.addEventListener('click', (e) => {
-
-            let testValues = {
-                0: "parent1\n\tenfant1\n\t\tsousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
-                1: "parent1\n\tenfant1\n\t\tsousenfant1\n\t\t\tsoussousenfant1\n\tenfant2\n\t\tsousenfant2\n\t\tsousenfant3\nparent2\n\tenfant3\n\tenfant4\n\t\tsousenfant4",
-                2: "Catégories éditoriales\n" +
-                    "\tÀ la une\n" +
-                    "\t\tActualités\n" +
-                    "\t\tAgenda\n" +
-                    "\tCatégories pour les tests\n" +
-                    "\t\tTest\n" +
-                    "\tConsultation par profil\n" +
-                    "\t\tJe suis un étudiant\n" +
-                    "\t\tJe suis un nouvel arrivant\n" +
-                    "\t\tJe suis un senior\n" +
-                    "\t\tJe suis une famille\n" +
-                    "\tThématiques éditoriales\n" +
-                    "\t\tAménagements\n" +
-                    "\t\tAndromède\n" +
-                    "\t\tCentre\n" +
-                    "\t\tCoopération"
-            }
-            // debug values
-            // textarea.value = testValues[2]
-            let val = textarea.value
-                .replaceAll("    ","\t")
-                .replaceAll("        ", "\t")
-                .trim()
-
-            textarea.value = JSON.stringify(val)
-        })
-
-        var toggler = document.getElementsByClassName("cat-caret");
-        var i;
-
-        for (i = 0; i < toggler.length; i++) {
-            toggler[i].addEventListener("click", function() {
-                this.parentElement.querySelector(".cat-nested").classList.toggle("cat-active");
-                this.classList.toggle("caret-down");
             });
-            toggler[i].parentElement.querySelector(".cat-nested").classList.toggle("cat-active");
-            toggler[i].classList.toggle("caret-down");
         }
+        console.log('CTB - tree built', tree)
     }
 
+    initContextMenu() {
+
+
+        // Prevent the default context menu from appearing
+        document.addEventListener("click", (e) => {
+            if (this.contextMenu.style.display === "block") {
+                this.contextMenu.style.display = "none"
+            }
+        });
+
+        // Define the actions for each menu option
+        document.getElementById("menuOption0").addEventListener("click", () => {
+            console.log("Menu Option 0 selected");
+        });
+
+        document.getElementById("menuOption1").addEventListener("click", () => {
+            console.log("Menu Option 1 selected");
+        });
+
+        document.getElementById("menuOption2").addEventListener("click", () => {
+            console.log("Menu Option 2 selected");
+        });
+
+        document.getElementById("menuOption3").addEventListener("click", () => {
+            console.log("Menu Option 3 selected");
+        });
+    }
 
 }
-
-class Category {
-
+new CategoryTree().init()
 
 
-}
-
-// Get a reference to the custom menu
-const customMenu = document.getElementById("customMenu");
-
-// Prevent the default context menu from appearing
-document.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-
-    // Show the custom menu at the mouse position
-    customMenu.style.top = `${event.pageY}px`;
-    customMenu.style.left = `${event.pageX}px`;
-    customMenu.style.display = "block";
-});
-
-// Hide the custom menu when clicked outside
-document.addEventListener("click", () => {
-    customMenu.style.display = "none";
-});
-
-// Define the actions for each menu option
-document.getElementById("menuOption1").addEventListener("click", () => {
-    console.log("Menu Option 1 selected");
-    // Perform the desired action for Menu Option 1
-});
-
-document.getElementById("menuOption2").addEventListener("click", () => {
-    console.log("Menu Option 2 selected");
-    // Perform the desired action for Menu Option 2
-});
-
-document.getElementById("menuOption3").addEventListener("click", () => {
-    console.log("Menu Option 3 selected");
-    // Perform the desired action for Menu Option 3
-});
-
-let c = new CategoryTreebuilder()
-
-console.log('ready to build categories :)')

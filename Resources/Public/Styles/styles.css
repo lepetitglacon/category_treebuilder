@@ -1,10 +1,34 @@
 .category {
     cursor: pointer;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
+.category:hover {
 
+}
 
+.cat-title:hover {
+    background-color: #eee;
+}
 
+/* SORTABLE*/
+/* CSS code */
+.sortable-item {
+    background-color: #f0f0f0;
+    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.sortable-ghost {
+    opacity: 0.5;
+}
+
+.sortable-drag {
+    background-color: #e0e0e0;
+}
 
 
 

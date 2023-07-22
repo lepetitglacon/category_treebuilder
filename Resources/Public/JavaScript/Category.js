@@ -1,9 +1,15 @@
+import Notification from "@typo3/backend/notification.js";
+
 export default class Category {
 
+    static IMAGE =
+        `<span class="t3js-icon icon icon-size-small icon-state-default icon-mimetypes-x-sys_category" data-identifier="mimetypes-x-sys_category">
+            <span class="icon-markup">
+                <svg class="icon-color"><use xlink:href="/_assets/1ee1d3e909b58d32e30dcea666dd3224/Icons/T3Icons/sprites/mimetypes.svg#mimetypes-x-sys_category"></use></svg>
+            </span>
+        </span>`
+
     constructor(props) {
-
-        console.log(props)
-
         this.uid = props.uid ?? 0
         this.pid = props.pid ?? 0
         this.parent = props.parent ?? 0
@@ -13,30 +19,49 @@ export default class Category {
         this.children = props.children ?? []
         this.tree = props.tree ?? undefined
 
+        this.li = document.createElement('li')
+        this.li.innerText = this.title
+        this.li.dataset.uid = this.uid
+        this.li.dataset.pid = this.pid
+        this.li.dataset.parent = this.parent
 
-        this.span = document.createElement('span')
-        this.span.innerText = this.title
-        this.span.dataset.uid = this.uid
-        this.span.dataset.pid = this.pid
-        this.span.dataset.parent = this.parent
+        this.li.classList.add('category')
 
-
-        this.div = this.tree.categoryImg.cloneNode(true)
-        this.div.classList.add('category')
-        this.div.appendChild(this.span)
-        this.tree.categoriesTree.appendChild(this.div)
+        this.childrenUl = document.createElement('ul')
+        this.childrenUl.classList.add('nested-sortable')
 
         if (this.children.length > 0) {
             for (const category of this.children) {
-                this.tree.categories.set(category.uid, new Category({
+                const cat = new Category({
                     tree: this.tree,
                     ...category
-                }))
+                })
+                this.tree.categories.set(category.uid, cat)
+                this.childrenUl.appendChild(cat.li)
             }
         }
 
-        this.span.addEventListener('contextmenu', (e) => {
+        Notification.success('Created', `category ${this.title} created`, 3);
+
+        // build category HTML
+        this.li.innerHTML = `
+        ${Category.IMAGE}
+        <span class="cat-title">${this.title}</span>
+        `
+
+        this.li.appendChild(this.childrenUl)
+
+        // add category to tree root if no parent
+        if (this.parent === 0) {
+            this.tree.treeList.appendChild(this.li)
+        }
+
+        this.li.addEventListener('contextmenu', (e) => {
+            if (e.ctrlKey) // debug purpose
+                return;
+
             e.preventDefault();
+            console.log(e.target)
 
             switch (e.button) {
                 case 0:
@@ -53,8 +78,6 @@ export default class Category {
                     break;
             }
         })
-
-        console.log('category created', this)
     }
 
 }

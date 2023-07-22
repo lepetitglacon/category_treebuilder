@@ -50,7 +50,11 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         ]);
 
         // Load JavaScript via PageRenderer
+        // TYPO3
         $this->pageRenderer->loadJavaScriptModule('@typo3/core/ajax/ajax-request.js');
+        // External libs
+        $this->pageRenderer->loadJavaScriptModule('sortablejs');
+        // CTB JS
         $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/index.js');
         $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/Category.js');
 

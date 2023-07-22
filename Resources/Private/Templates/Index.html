@@ -6,12 +6,13 @@
 <f:layout name="Backend/Default"/>
 <f:be.pagerenderer includeJavaScriptModules="{
          0: '@typo3/core/ajax/ajax-request.js',
-         1: '@petitglacon/category-treebuilder/index.js',
-         2: '@petitglacon/category-treebuilder/Category.js',
+         1: 'sortablejs',
+         2: '@petitglacon/category-treebuilder/index.js',
+         3: '@petitglacon/category-treebuilder/Category.js',
       }"/>
 <f:section name="Content">
 
-    <input id="hiddenTreeJson" value="{jsonTree}" class="hidden">
+    <input id="jsonTreeInput" value="{jsonTree}" class="hidden">
     <input id="info" value="{info}" class="hidden">
 
 
@@ -20,7 +21,10 @@
     --></f:comment>
 
     <div class="container-fluid">
-        <div id="cat-tree" class="col-5"></div>
+        <div id="cat-tree-div" class="col-5">
+            <ul id="cat-tree"></ul>
+        </div>
+
         <div id="folder-tree" class="col-5"></div>
         <div id="ext-conf" class="col-2"></div>
     </div>
@@ -33,13 +37,9 @@
     <ul id="customMenu">
         <li id="menuOption0">Modify</li>
         <li id="menuOption1">Add before</li>
-        <li id="menuOption2">Add after</li>
-        <li id="menuOption3">Add inside</li>
+        <li id="menuOption2">Add inside</li>
+        <li id="menuOption3">Add after</li>
     </ul>
-
-    <div id="category-img">
-        <core:icon identifier="mimetypes-x-sys_category"/>
-    </div>
 
 </f:section>
 
