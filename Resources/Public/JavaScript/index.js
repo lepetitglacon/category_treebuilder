@@ -4,11 +4,15 @@ import Category from '@petitglacon/category-treebuilder/Category.js'
 import CategoryFormModal from "@petitglacon/category-treebuilder/CategoryFormModal.js";
 import Sortable from 'sortablejs'
 
-console.log(Sortable)
+// console.log(Sortable)
 
 export default class CategoryTree {
 
     constructor() {
+        this.config = {
+            reorderingCategories: 0, // reoarders categories when changing in the same parent
+            automaticDirectories: 1,
+        }
 
         // utils
         this.loaderDiv = document.getElementById('loader')
@@ -20,7 +24,9 @@ export default class CategoryTree {
         this.treeList = document.getElementById('cat-tree')
 
         // category form
-        this.categoryFormModal = new CategoryFormModal()
+        this.categoryFormModal = new CategoryFormModal({
+            tree: this
+        })
 
         this.categories = new Map()
         this.categories.set(0, new Category({
@@ -63,6 +69,31 @@ export default class CategoryTree {
             }))
         }
 
+        this.buildSortableTree()
+
+        const carets = document.getElementsByClassName('icon-actions-caret-right')
+        for (let i = 0; i < carets.length; i++) {
+            carets[i].addEventListener('click', e => {
+
+                let li = e.target.parentNode.parentNode.parentNode
+                if (li.dataset.uid === undefined) {
+                    li = e.target.parentNode.parentNode.parentNode.parentNode
+                }
+                const cat = this.categories.get(parseInt(li.dataset.uid))
+                cat.childrenUl.classList.toggle('d-none')
+
+                let caret = cat.li.querySelector('.icon-actions-caret-right');
+                caret.classList.toggle('rotate-right')
+            })
+        }
+
+
+        Notification.success('Tree built', `You can start managing categories`, 5);
+        console.log('CTB - tree built')
+        // console.log(this.categories)
+    }
+
+    buildSortableTree() {
         const nestedSortables = document.getElementsByClassName('nested-sortable')
         for (let i = 0; i < nestedSortables.length; i++) {
             new Sortable(nestedSortables[i], {
@@ -71,26 +102,35 @@ export default class CategoryTree {
                 fallbackOnBody: true,
                 swapThreshold: 0.65,
                 onEnd: async (e) => {
-                    console.log(e.item);
 
-                    const categoryJson = {foo: 'bar'};
-                    const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_move).post(categoryJson, {
-                        headers: {
-                            'Content-Type': 'application/json; charset=utf-8'
+                    if (e.item.dataset.parent !== e.to.parentNode.dataset.uid) {
+                        console.log('need to change category parent')
+
+                        const categoryJson = {foo: 'bar'};
+                        // TODO move categories parent
+                        const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_move).post(categoryJson);
+                        const {success, message} = await res.resolve();
+
+                        if (!success) {
+                            Notification.error('Category not moved', message, 5);
+                        } else {
+                            Notification.success('Category moved', e.item.dataset.title, 5)
                         }
-                    });
-                    const {success, message} = await res.resolve();
-
-                    if (!success) {
-                        Notification.error('Category not moved', message, 5);
                     } else {
-                        Notification.success('Category moved', e.item.dataset.title, 5)
+                        if (this.config.reorderingCategories) {
+                            // TODO change ordering (add a CONF option if usefull)
+                            Notification.success('Same parent', `ordering changed`, 5);
+                        } else {
+                            Notification.info('Same parent', `activate 'reorderingCategories' config to reorder categories in same parent`, 5);
+                        }
+
                     }
+
+
 
                 }
             });
         }
-        console.log('CTB - tree built')
     }
 
     initContextMenu() {
@@ -123,8 +163,14 @@ export default class CategoryTree {
         });
 
         document.getElementById("menuOption3").addEventListener("click", () => {
-            console.log("Menu Option 3 selected");
+            console.log("Menu Option 5 selected");
         });
+    }
+
+    addCategoryToCategory(category) {
+        console.log('parent',category.parent)
+        const cat = this.categories.get(parseInt(category.parent))
+        cat.addChildren(category)
     }
 
 }

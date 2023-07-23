@@ -81,18 +81,30 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function insert(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
+        $args = $request->getParsedBody();
+        $category = $args['category'];
 
-//        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->arguments, '$this->arguments');
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($request->getParsedBody(), '$this->arguments');
-
-//        $cat = new Category();
+        $cat = new Category(
+            $category['uid'],
+            $category['pid'],
+            $category['parent'],
+            $category['title']
+        );
 //
-//        $success = $this->queryManager->insertCategory();
-        $success = false;
+        $res = $this->queryManager->insertCategory($cat);
+
+        if ($res['rows'] === 1) {
+            $success = true;
+            $message = 'category ' . $res['uid'] . ' created';
+        } else {
+            $success = false;
+            $message = 'category ' . $res['uid'] . ' could not be created';
+        }
 
         return $this->jsonResponse(json_encode([
             'success' => $success,
-            'message' => 'error blabla'
+            'uid' => $res['uid'],
+            'message' => $message
         ]));
     }
 }

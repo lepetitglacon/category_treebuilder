@@ -3,7 +3,9 @@ import AjaxRequest from '@typo3/core/ajax/ajax-request.js'
 
 export default class CategoryFormModal {
 
-    constructor() {
+    constructor(props) {
+        this.tree = props.tree
+
 
         this.modal = document.getElementById('categoryFormModal')
         this.modalTitle = document.getElementById('categoryFormModal-modalTitle')
@@ -17,28 +19,30 @@ export default class CategoryFormModal {
         this.form.addEventListener('submit', async (e) => {
             e.preventDefault()
 
-            console.log('form submitted')
+            let category = {
+                title: this.formTitle.value,
+                parent: this.formParent.value,
+                pid: this.formPid.value
+            }
 
             const categoryJson = {
-                category: {
-                    title: this.formTitle.value,
-                    parent: this.formParent.value,
-                    pid: this.formPid.value
-                }
+                category: category
             };
-            const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_insert).post(categoryJson, {
-                // headers: {
-                //     'Content-Type': 'application/json; charset=utf-8'
-                // }
-            });
-            console.log(res)
-            const {success, message} = await res.resolve();
+            const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_insert).post(categoryJson);
+            const {success, uid, message} = await res.resolve();
 
             if (success) {
-                Notification.success('Created', `category ${this.formTitle.value} created`, 5);
-                this.emptyInfo_()
+                Notification.success('Created', message, 5);
+
+                this.hide()
+                this.emptyForm_()
+
+                category.uid = uid
+                this.tree.addCategoryToCategory(category)
+
+
             } else {
-                Notification.error('Not created', `category ${this.formTitle.value} was not created`, 5);
+                Notification.error('Not created', message, 5);
             }
 
         })
@@ -71,7 +75,7 @@ export default class CategoryFormModal {
         this.formUid.value = props.uid ?? 0
     }
 
-    emptyInfo_() {
+    emptyForm_() {
         this.formTitle.value = ''
         this.formParent.value = 0
         this.formPid.value = 0

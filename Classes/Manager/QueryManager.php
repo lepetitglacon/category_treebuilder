@@ -113,9 +113,16 @@ class QueryManager
     }
 
     public function insertCategory(Category $category) {
-        return $this->getQueryBuilder()
+        $qb = $this->getQueryBuilder();
+        $rowCount = $qb
             ->insert(self::TABLE)
-            ->values($category->toArray());
+            ->values($category->toArray())
+            ->executeStatement();
+        $uid = $qb->getConnection()->lastInsertId();
+        return [
+            'rows' => $rowCount,
+            'uid' => $uid
+        ];
     }
 
     public function getLastInsertedUidAfterInsert() {

@@ -36,10 +36,11 @@
     --></f:comment>
 
     <ul id="customMenu">
-        <li id="menuOption0">Modify</li>
-        <li id="menuOption1">Add before</li>
-        <li id="menuOption2">Add inside</li>
-        <li id="menuOption3">Add after</li>
+        <li id="menuOption0"><core:icon identifier="actions-document-edit" size="small" /> Modify</li>
+        <hr>
+        <li id="menuOption1" class="disabled"><core:icon identifier="actions-paste-before" size="small" /> Add before</li>
+        <li id="menuOption2"><core:icon identifier="apps-pagetree-drag-move-into" size="small" /> Add inside</li>
+        <li id="menuOption3" class="disabled"><core:icon identifier="actions-paste-after" size="small" /> Add after</li>
     </ul>
 
     <div id="categoryFormModal" class="modal" tabindex="-1" role="dialog">
@@ -55,7 +56,7 @@
                     <form id="categoryFormModal-form">
                         <div class="form-group">
                             <label for="categoryFormModal-formTitle">Title</label>
-                            <input type="text" class="form-control" id="categoryFormModal-formTitle">
+                            <input type="text" class="form-control" id="categoryFormModal-formTitle" required="required">
                         </div>
                         <div class="form-group">
                             <label for="categoryFormModal-formParent">Parent Category ID <span>(parent)</span></label>
