@@ -148,15 +148,27 @@ class QueryManager
     }
 
     public function update($category) {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
-        return (int)$queryBuilder
+        $qb = $this->getQueryBuilder();
+        return (int)$qb
             ->update(self::TABLE)
             ->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($category['uid'], \PDO::PARAM_INT))
+                $qb->expr()->eq('uid', $qb->createNamedParameter($category['uid'], \PDO::PARAM_INT))
             )
             ->set('pid', $category['pid'])
             ->set('parent', $category['parent'])
             ->set('title', $category['title'])
+            ->executeStatement();
+    }
+
+    public function updateParent($uid, $parent): int
+    {
+        $qb = $this->getQueryBuilder();
+        return (int)$qb
+            ->update(self::TABLE)
+            ->where(
+                $qb->expr()->eq('uid', $qb->createNamedParameter($uid, \PDO::PARAM_INT))
+            )
+            ->set('parent', $parent)
             ->executeStatement();
     }
 
@@ -178,5 +190,25 @@ class QueryManager
             )
             ->set('deleted', 1)
             ->executeStatement();
+    }
+
+
+    /**
+     * @param $uid
+     * @return array
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function getCategory($uid) {
+        $qb = $this->getQueryBuilder();
+        $result = $qb
+            ->select('*')
+            ->from(self::TABLE)
+            ->where(
+                $qb->expr()->eq('pid', $qb->createNamedParameter($uid, Connection::PARAM_INT))
+            )
+            ->executeQuery();
+        return [
+            $result->fetchAllAssociative()
+        ];
     }
 }

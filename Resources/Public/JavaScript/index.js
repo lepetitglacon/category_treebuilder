@@ -6,12 +6,15 @@ import Sortable from 'sortablejs'
 
 // console.log(Sortable)
 
-export default class CategoryTree {
+export default class CategoryTree extends EventTarget {
 
     constructor() {
+        super();
+
         this.config = {
             reorderingCategories: 0, // reoarders categories when changing in the same parent
-            automaticDirectories: 1,
+            automaticDirectories: 1, // create automatically sub folders for children categories
+            categoryClassName: 'TYPO3\\CMS\\Extbase\\Domain\\Model\\Category', // used to build the insert/update form
         }
 
         // utils
@@ -22,13 +25,15 @@ export default class CategoryTree {
         // trees
         this.treeContainer = document.getElementById('cat-tree-div')
         this.treeList = document.getElementById('cat-tree')
+        this.categories = new Map() // will hold all categories by id
+        this.moves = new Map() // will hold all movement of categories to rollback on error
 
         // category form
         this.categoryFormModal = new CategoryFormModal({
             tree: this
         })
 
-        this.categories = new Map()
+
         this.categories.set(0, new Category({
             tree: this,
             title: 'Root',
@@ -39,6 +44,13 @@ export default class CategoryTree {
         }))
 
         this.lastContextMenuCategory = {}
+
+        this.addEventListener('category/move/error', e => {
+
+        })
+        this.addEventListener('category/move/success', e => {
+
+        })
 
     }
 
@@ -106,7 +118,10 @@ export default class CategoryTree {
                     if (e.item.dataset.parent !== e.to.parentNode.dataset.uid) {
                         console.log('need to change category parent')
 
-                        const categoryJson = {foo: 'bar'};
+                        const categoryJson = {
+                            uid: e.item.dataset.uid,
+                            parent: e.to.parentNode.dataset.uid
+                        };
                         // TODO move categories parent
                         const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_move).post(categoryJson);
                         const {success, message} = await res.resolve();
@@ -126,8 +141,9 @@ export default class CategoryTree {
 
                     }
 
-
-
+                },
+                onAdd: async (e) => {
+                    console.log('onAdd',e)
                 }
             });
         }
@@ -143,8 +159,17 @@ export default class CategoryTree {
         });
 
         // Define the actions for each menu option
-        document.getElementById("menuOption0").addEventListener("click", () => {
+        document.getElementById("menuOption0").addEventListener("click", (e) => {
             console.log("Menu Option 0 selected");
+            const cat = this.lastContextMenuCategory.target.parentNode ?? {}
+            console.log(cat)
+            this.categoryFormModal.show('Modify category', {
+                method: 'update',
+                parent: cat.dataset.parent,
+                pid: cat.dataset.pid,
+                uid: cat.dataset.uid,
+                title: cat.dataset.title
+            })
         });
 
         document.getElementById("menuOption1").addEventListener("click", () => {
@@ -155,6 +180,7 @@ export default class CategoryTree {
             const parent = this.lastContextMenuCategory.target.parentElement ?? {}
 
             this.categoryFormModal.show('Create category', {
+                method: 'insert',
                 parent: parent.dataset.uid,
                 pid: parent.dataset.pid
             })
@@ -171,6 +197,12 @@ export default class CategoryTree {
         console.log('parent',category.parent)
         const cat = this.categories.get(parseInt(category.parent))
         cat.addChildren(category)
+    }
+
+    updateCategory(category) {
+        if (!category.uid) return console.error('Could not update category, category does not exist in tree');
+        const cat = this.categories.get(parseInt(category.uid))
+        cat.updateInfo(category)
     }
 
 }

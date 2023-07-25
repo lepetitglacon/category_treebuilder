@@ -107,4 +107,10 @@ export default class Category {
         // this.childrenUl.refresh()
     }
 
+    updateInfo(category) {
+        this.li.dataset.title = category.title
+        this.li.dataset.parent = category.parent
+        this.li.dataset.pid = category.pid
+    }
+
 }

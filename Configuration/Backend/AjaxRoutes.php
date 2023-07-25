@@ -15,4 +15,12 @@ return [
         'path' => '/category_treebuilder/insert',
         'target' => AjaxController::class . '::insert',
     ],
+    'category_treebuilder_update' => [
+        'path' => '/category_treebuilder/insert',
+        'target' => AjaxController::class . '::update',
+    ],
+    'category_treebuilder_insertorupdate' => [
+        'path' => '/category_treebuilder/insert',
+        'target' => AjaxController::class . '::insertOrUpdate',
+    ],
 ];

@@ -59,25 +59,35 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * action index
+     * Move a category to a new parent
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
-    public function move(): \Psr\Http\Message\ResponseInterface
+    public function move(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
+        $args = $request->getParsedBody();
+        $uid = $args['uid'];
+        $parent = $args['parent'];
 
-        $success = false;
+        $res = $this->queryManager->updateParent($uid, $parent);
+
+        if ($res) {
+            $success = true;
+        } else {
+            $success = false;
+        }
 
         return $this->jsonResponse(json_encode([
             'success' => $success,
-            'message' => 'error blabla'
+            'message' => 'TODO'
         ]));
     }
 
     /**
-     * action index
+     * Insert a new category
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
      */
     public function insert(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
@@ -106,5 +116,91 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             'uid' => $res['uid'],
             'message' => $message
         ]));
+    }
+
+    /**
+     * Update an existing category
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function update(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+    {
+        $args = $request->getParsedBody();
+        $category = $args['category'];
+
+        $cat = new Category(
+            $category['uid'],
+            $category['pid'],
+            $category['parent'],
+            $category['title']
+        );
+//
+        $res = $this->queryManager->update($cat);
+
+        if ($res['rows'] === 1) {
+            $success = true;
+            $message = 'category ' . $res['uid'] . ' created';
+        } else {
+            $success = false;
+            $message = 'category ' . $res['uid'] . ' could not be created';
+        }
+
+        return $this->jsonResponse(json_encode([
+            'success' => $success,
+            'uid' => $res['uid'],
+            'message' => $message,
+            'res' => $res
+        ]));
+    }
+
+    /**
+     * Insert or update a category
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function insertOrUpdate(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+    {
+//        $args = $request->getParsedBody();
+//        $categoryFromRequest = $args['category'];
+//
+//        $this->verifyCategoryFromRequest();
+//
+//        if ($args['category']['uid']) {
+//            $catFromDB = $this->queryManager->getCategory($categoryFromRequest['uid']);
+//        }
+//
+//        $cat = new Category(
+//            $categoryFromRequest['uid'],
+//            $categoryFromRequest['pid'],
+//            $categoryFromRequest['parent'],
+//            $categoryFromRequest['title']
+//        );
+////
+//        $res = $this->queryManager->insertCategory($cat);
+//
+//        if ($res['rows'] === 1) {
+//            $success = true;
+//            $message = 'category ' . $res['uid'] . ' created';
+//        } else {
+//            $success = false;
+//            $message = 'category ' . $res['uid'] . ' could not be created';
+//        }
+//
+//        return $this->jsonResponse(json_encode([
+//            'success' => $success,
+//            'uid' => $res['uid'],
+//            'message' => $message
+//        ]));
+
+        return $this->jsonResponse(json_encode([
+            'success' => false,
+            'message' => 'TODO'
+        ]));
+    }
+
+    private function verifyCategoryFromRequest() {
+
     }
 }
