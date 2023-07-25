@@ -98,7 +98,7 @@ class QueryManager
     public function getCategoriesForFrontend() {
         $this->queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         return $this->queryBuilder
-            ->select('uid', 'title', 'parent')
+            ->select('uid', 'title', 'pid', 'parent')
             ->from(self::TABLE)
             ->executeQuery()
             ->fetchAllAssociative();
