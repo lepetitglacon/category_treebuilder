@@ -5,6 +5,8 @@ export default class Category {
 
 
     constructor(props) {
+        this.tree = props.tree ?? undefined
+
         this.uid = props.uid ?? 0
         this.pid = props.pid ?? 0
         this.parent = props.parent ?? 0
@@ -13,9 +15,22 @@ export default class Category {
         this.badge = this.folder === 'ROOT' ? 'primary' : 'secondary'
         this.folderUid = props.folderUid ?? 0
 
+        // set folder color
+        if (this.tree.folders.has(this.folderUid)) {
+            console.log('allready have folder ' + this.folderUid)
+            this.folderColor = this.tree.folders.get(this.folderUid).color
+        } else {
+            console.log('new folder ' + this.folderUid)
+            const color = this.tree.getRandomColor()
+            this.tree.folders.set(this.folderUid, {
+                color: color
+            })
+            this.folderColor = color
+        }
+
         this.depth = props.depth ?? 0
         this.children = props.children ?? []
-        this.tree = props.tree ?? undefined
+
 
         this.li = document.createElement('li')
         this.li.dataset.title = this.title
@@ -59,7 +74,7 @@ export default class Category {
         ${this.CARET}
         ${this.IMAGE}
         <span class="cat-title">${this.title}</span>
-        <span class="badge badge-${this.badge}">[${this.folderUid}] ${this.folder}</span>
+        <span class="badge" style="background: #${this.folderColor}">[${this.folderUid}] ${this.folder}</span>
         `
 
         // add children to HTML

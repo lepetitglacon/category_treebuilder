@@ -15,6 +15,7 @@ export default class CategoryTree extends EventTarget {
             reorderingCategories: 0, // reoarders categories when changing in the same parent
             automaticDirectories: 1, // create automatically sub folders for children categories
             categoryClassName: 'TYPO3\\CMS\\Extbase\\Domain\\Model\\Category', // used to build the insert/update form
+            randomColorForFolders: true, // true for random folders color every refresh, false for fixed colors
         }
 
         // utils
@@ -25,14 +26,16 @@ export default class CategoryTree extends EventTarget {
         // trees
         this.treeContainer = document.getElementById('cat-tree-div')
         this.treeList = document.getElementById('cat-tree')
+
+        // Maps
         this.categories = new Map() // will hold all categories by id
         this.moves = new Map() // will hold all movement of categories to rollback on error
+        this.folders = new Map() // will hold all movement of categories to rollback on error
 
         // category form
         this.categoryFormModal = new CategoryFormModal({
             tree: this
         })
-
 
         this.categories.set(0, new Category({
             tree: this,
@@ -203,6 +206,18 @@ export default class CategoryTree extends EventTarget {
         if (!category.uid) return console.error('Could not update category, category does not exist in tree');
         const cat = this.categories.get(parseInt(category.uid))
         cat.updateInfo(category)
+    }
+
+    getRandomColor() {
+        // old way
+        // return Math.floor(Math.random()*16777215).toString(16);
+
+        const letters = /*'01234567*/ '89ABCDEF';
+        let color = '';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 8)];
+        }
+        return color;
     }
 
 }
