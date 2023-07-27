@@ -9,6 +9,9 @@ export default class Category {
         this.pid = props.pid ?? 0
         this.parent = props.parent ?? 0
         this.title = props.title ?? ''
+        this.folder = props.folder ?? 'ROOT'
+        this.badge = this.folder === 'ROOT' ? 'primary' : 'secondary'
+        this.folderUid = props.folderUid ?? 0
 
         this.depth = props.depth ?? 0
         this.children = props.children ?? []
@@ -56,6 +59,7 @@ export default class Category {
         ${this.CARET}
         ${this.IMAGE}
         <span class="cat-title">${this.title}</span>
+        <span class="badge badge-${this.badge}">[${this.folderUid}] ${this.folder}</span>
         `
 
         // add children to HTML

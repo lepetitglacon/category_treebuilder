@@ -96,10 +96,17 @@ class QueryManager
     }
 
     public function getCategoriesForFrontend() {
-        $this->queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        return $this->queryBuilder
-            ->select('uid', 'title', 'pid', 'parent')
+        $qb = $this->getQueryBuilder();
+        $qb->getRestrictions()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $qb
+            ->select(self::TABLE.'.uid', self::TABLE.'.title', self::TABLE.'.pid', self::TABLE.'.parent', 'p.title as folder', 'p.uid as folderUid')
             ->from(self::TABLE)
+            ->leftJoin(
+                self::TABLE,
+                'pages',
+                'p',
+                $qb->expr()->eq('p.uid', $qb->quoteIdentifier(self::TABLE.'.pid'))
+            )
             ->executeQuery()
             ->fetchAllAssociative();
     }
