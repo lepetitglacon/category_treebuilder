@@ -6,8 +6,8 @@ Build you're category tree with a built-in text editor and more.
 
 ## Install
 
-> :warning: Do not install this extension in production environnement !
-> This extension is still in development phase, it may ruin your category folder structure or delete all your categories :warning:
+> :warning: Do not install this extension in production environnement ! :warning:
+> This extension is still in development phase, it may ruin your category folder structure or delete all your categories
 
 Download the extension, put it in the "packages" folder.
 
