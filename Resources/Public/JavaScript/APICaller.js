@@ -15,4 +15,12 @@ export default class APICaller extends EventTarget {
         })
     }
 
+    static async changeCategoryParent(args) {
+        const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_move).post({
+            uid: args.categoryUid,
+            parent: args.newParent
+        });
+        return res.resolve();
+    }
+
 }

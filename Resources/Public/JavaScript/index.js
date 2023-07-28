@@ -3,6 +3,7 @@ import Notification from "@typo3/backend/notification.js";
 import Category from '@petitglacon/category-treebuilder/Category.js'
 import CategoryFormModal from "@petitglacon/category-treebuilder/CategoryFormModal.js";
 import Sortable from 'sortablejs'
+import APICaller from "@petitglacon/category-treebuilder/APICaller.js";
 
 // console.log(Sortable)
 
@@ -31,6 +32,8 @@ export default class CategoryTree extends EventTarget {
         this.categories = new Map() // will hold all categories by id
         this.moves = new Map() // will hold all movement of categories to rollback on error
         this.folders = new Map() // will hold all movement of categories to rollback on error
+
+        this.movesCounter = 0
 
         // category form
         this.categoryFormModal = new CategoryFormModal({
@@ -102,7 +105,6 @@ export default class CategoryTree extends EventTarget {
             })
         }
 
-
         Notification.success('Tree built', `You can start managing categories`, 5);
         console.log('CTB - tree built')
         // console.log(this.categories)
@@ -118,20 +120,24 @@ export default class CategoryTree extends EventTarget {
                 swapThreshold: 0.65,
                 onEnd: async (e) => {
 
+                    const cat = this.categories.get(e.item.dataset.uid)
+
                     if (e.item.dataset.parent !== e.to.parentNode.dataset.uid) {
                         console.log('need to change category parent')
 
-                        const categoryJson = {
-                            uid: e.item.dataset.uid,
-                            parent: e.to.parentNode.dataset.uid
-                        };
-                        // TODO move categories parent
-                        const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_move).post(categoryJson);
-                        const {success, message} = await res.resolve();
+                        // set moves to cancel them if needed
+                        const moveId = this.addMove(e)
+
+                        const {success, message} = await APICaller.changeCategoryParent({
+                            categoryUid: e.item.dataset.uid,
+                            newParent: e.to.parentNode.dataset.uid
+                        })
 
                         if (!success) {
+                            this.cancelMove(moveId)
                             Notification.error('Category not moved', message, 5);
                         } else {
+                            // updateInfo()
                             Notification.success('Category moved', e.item.dataset.title, 5)
                         }
                     } else {
@@ -146,7 +152,7 @@ export default class CategoryTree extends EventTarget {
 
                 },
                 onAdd: async (e) => {
-                    console.log('onAdd',e)
+                    console.log('onAdd', e)
                 }
             });
         }
@@ -209,15 +215,29 @@ export default class CategoryTree extends EventTarget {
     }
 
     getRandomColor() {
-        // old way
-        // return Math.floor(Math.random()*16777215).toString(16);
-
         const letters = /*'01234567*/ '89ABCDEF';
         let color = '';
         for (let i = 0; i < 6; i++) {
             color += letters[Math.floor(Math.random() * 8)];
         }
         return color;
+    }
+
+    addMove(e) {
+        const uid = this.movesCounter++
+        this.moves.set(uid, e)
+        return uid
+    }
+
+    cancelMove(moveId) {
+        if (this.moves.has(moveId)) {
+            const move = this.moves.get(moveId)
+
+            // TODO set item parent to original parent
+            // move.item
+
+        }
+
     }
 
 }

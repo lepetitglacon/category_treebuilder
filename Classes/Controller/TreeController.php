@@ -57,6 +57,7 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         // CTB JS
         $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/index.js');
         $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/Category.js');
+        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/APICaller.js');
 
         // add css
         $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/Styles/styles.css');

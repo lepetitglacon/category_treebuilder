@@ -10,7 +10,8 @@ return [
         'access' => 'user',
         'workspaces' => 'live',
         'path' => '/category_treebuilder/',
-        'labels' => 'LLL:EXT:examples/Resources/Private/Language/Module/locallang_mod.xlf',
+        'iconIdentifier' => 'category_treebuilder',
+        'labels' => 'Category Tree Builder',
         'extensionName' => 'CategoryTreebuilder',
         'controllerActions' => [
             \Petitglacon\CategoryTreebuilder\Controller\TreeController::class => [
