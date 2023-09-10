@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Petitglacon\CategoryTreebuilder\Controller;
 
+use Doctrine\DBAL\Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Petitglacon\CategoryTreebuilder\Builder\TreeBuilder;
 use Petitglacon\CategoryTreebuilder\Enum\FileType;
@@ -28,6 +29,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param TreeBuilder $treeBuilder
      * @param ModuleTemplateFactory $moduleTemplateFactory
      * @param PageRenderer $pageRenderer
+     * @param QueryManager $queryManager
      */
     public function __construct(
         private readonly FileManager             $fileManager,
@@ -200,7 +202,40 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         ]));
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws Exception
+     */
+    public function generateFakeData(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface {
+        $faker = \Faker\Factory::create();
+
+        /** @var Category[] $categories */
+        $categories = [];
+
+        $categoriesStartUids = $this->queryManager->getLastInsertedUid();
+
+        for ($i = 0; $i < 100; $i++) {
+            $cat = new Category(
+                ++$categoriesStartUids,
+                3,
+                $faker->randomElement([25, 28, 30, $categoriesStartUids-1]),
+                implode(' ', $faker->words($i % 5))
+            );
+            $categories[] = $cat->toArray();
+        }
+
+        $success = $this->queryManager->bulkInsert($categories) > 0;
+        return $this->jsonResponse(json_encode([
+            'success' => $success,
+            'message' => 'TEST',
+        ]));
+    }
+
+
     private function verifyCategoryFromRequest() {
 
     }
+
+
 }

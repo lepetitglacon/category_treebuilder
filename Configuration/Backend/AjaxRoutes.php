@@ -23,4 +23,8 @@ return [
         'path' => '/category_treebuilder/insert',
         'target' => AjaxController::class . '::insertOrUpdate',
     ],
+    'category_treebuilder_generatefakedata' => [
+        'path' => '/category_treebuilder/generatefakedata',
+        'target' => AjaxController::class . '::generateFakeData',
+    ],
 ];

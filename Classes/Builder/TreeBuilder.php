@@ -89,14 +89,21 @@ class TreeBuilder
     {
         $depth = 0;
         $cat = $category;
+
         while (!empty($cat['parent'])) {
             $depth++;
             $cat = $array[$cat['parent']];
+            if ($depth >= 999) return $depth;
         }
+
         return $depth;
     }
 
     public function buildExportTree() {
         return $this->queryManager->getCategoriesForExport();
+    }
+
+    public function generateFakeData() {
+
     }
 }

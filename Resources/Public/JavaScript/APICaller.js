@@ -23,4 +23,9 @@ export default class APICaller extends EventTarget {
         return res.resolve();
     }
 
+    static async generateFakeData(args) {
+        const res = await new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_generatefakedata).post({});
+        return res.resolve();
+    }
+
 }

@@ -114,6 +114,11 @@ export default class CategoryFormModal extends EventTarget{
         })
     }
 
+    /**
+     *
+     * @param title
+     * @param props
+     */
     show(title, props = {}) {
         this.modalTitle.innerText = title
         this.fillInfo_(props)

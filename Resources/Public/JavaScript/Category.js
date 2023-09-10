@@ -101,11 +101,11 @@ export default class Category {
                     break;
                 case 2:
                     // Show the custom menu at the mouse position
-                    this.tree.lastContextMenuCategory = e
+                    this.tree.contextMenu.lastContextMenuCategory = e
 
-                    this.tree.contextMenu.style.top = `${e.pageY}px`;
-                    this.tree.contextMenu.style.left = `${e.pageX}px`;
-                    this.tree.contextMenu.style.display = "block";
+                    this.tree.contextMenu.div.style.top = `${e.pageY}px`;
+                    this.tree.contextMenu.div.style.left = `${e.pageX}px`;
+                    this.tree.contextMenu.div.style.display = "block";
                     break;
             }
         })

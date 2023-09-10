@@ -4,6 +4,7 @@ import Category from '@petitglacon/category-treebuilder/Category.js'
 import CategoryFormModal from "@petitglacon/category-treebuilder/CategoryFormModal.js";
 import Sortable from 'sortablejs'
 import APICaller from "@petitglacon/category-treebuilder/APICaller.js";
+import ContextMenu from "@petitglacon/category-treebuilder/ContextMenu.js";
 
 // console.log(Sortable)
 
@@ -22,7 +23,6 @@ export default class CategoryTree extends EventTarget {
         // utils
         this.loaderDiv = document.getElementById('loader')
         this.categoryImg = document.getElementById('category-img')
-        this.contextMenu = document.getElementById('customMenu')
 
         // trees
         this.treeContainer = document.getElementById('cat-tree-div')
@@ -35,10 +35,8 @@ export default class CategoryTree extends EventTarget {
 
         this.movesCounter = 0
 
-        // category form
-        this.categoryFormModal = new CategoryFormModal({
-            tree: this
-        })
+        this.contextMenu = new ContextMenu({tree: this})
+        this.categoryFormModal = new CategoryFormModal({tree: this})
 
         this.categories.set(0, new Category({
             tree: this,
@@ -49,20 +47,27 @@ export default class CategoryTree extends EventTarget {
             depth: 0
         }))
 
-        this.lastContextMenuCategory = {}
+        this.bind()
+    }
 
+    bind() {
         this.addEventListener('category/move/error', e => {
 
         })
         this.addEventListener('category/move/success', e => {
 
         })
-
+        document.getElementById('ext-conf_actions_generateFakeCategories')
+            .addEventListener('click', async e => {
+                const res = await APICaller.generateFakeData({})
+                Notification.success('Fake Categories Generated',
+                    res.words, 5);
+            console.log('generating fake data')
+        })
     }
 
     async init() {
         await this.initCategoryTree()
-        this.initContextMenu()
         console.log('ready to build categories :)')
     }
 
@@ -156,50 +161,6 @@ export default class CategoryTree extends EventTarget {
                 }
             });
         }
-    }
-
-    initContextMenu() {
-
-        // Prevent the default context menu from appearing
-        document.addEventListener("click", (e) => {
-            if (this.contextMenu.style.display === "block") {
-                this.contextMenu.style.display = "none"
-            }
-        });
-
-        // Define the actions for each menu option
-        document.getElementById("menuOption0").addEventListener("click", (e) => {
-            console.log("Menu Option 0 selected");
-            const cat = this.lastContextMenuCategory.target.parentNode ?? {}
-            console.log(cat)
-            this.categoryFormModal.show('Modify category', {
-                method: 'update',
-                parent: cat.dataset.parent,
-                pid: cat.dataset.pid,
-                uid: cat.dataset.uid,
-                title: cat.dataset.title
-            })
-        });
-
-        document.getElementById("menuOption1").addEventListener("click", () => {
-            console.log("Menu Option 1 selected");
-        });
-
-        document.getElementById("menuOption2").addEventListener("click", (e) => {
-            const parent = this.lastContextMenuCategory.target.parentElement ?? {}
-
-            this.categoryFormModal.show('Create category', {
-                method: 'insert',
-                parent: parent.dataset.uid,
-                pid: parent.dataset.pid
-            })
-
-            console.log("Menu Option 2 selected");
-        });
-
-        document.getElementById("menuOption3").addEventListener("click", () => {
-            console.log("Menu Option 5 selected");
-        });
     }
 
     addCategoryToCategory(category) {

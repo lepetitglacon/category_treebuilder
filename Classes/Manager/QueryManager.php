@@ -132,11 +132,18 @@ class QueryManager
         ];
     }
 
+    /**
+     * @return int
+     */
     public function getLastInsertedUidAfterInsert() {
-        return $this->connection->lastInsertId('sys_category');
+        return (int)$this->connection->lastInsertId('sys_category');
     }
 
-    public function getLastInsertedUid() {
+    /**
+     * @return int
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function getLastInsertedUid(): int {
         return (int)$this->queryBuilder
             ->select('uid')
             ->from(self::TABLE)
@@ -146,7 +153,11 @@ class QueryManager
             ->fetchAllAssociative()[0]['uid'];
     }
 
-    public function bulkInsert($categories) {
+    /**
+     * @param Category[] $categories
+     * @return int
+     */
+    public function bulkInsert(array $categories) {
         return $this->connection->bulkInsert(
             self::TABLE,
             $categories,
