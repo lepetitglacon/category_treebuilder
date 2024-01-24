@@ -1,140 +1,17 @@
 <f:layout name="Backend/Default"/>
 
-<f:be.pagerenderer includeJavaScriptModules="{
-         0: '@typo3/core/ajax/ajax-request.js',
-         1: 'sortable',
-         2: '@petitglacon/category-treebuilder/index.js',
-         3: '@petitglacon/category-treebuilder/Category.js',
-         3: '@petitglacon/category-treebuilder/CategoryFormModal.js',
-         4: '@petitglacon/category-treebuilder/ContextMenu.js',
-      }"/>
-
 <f:section name="Content">
-
-<div id="module-container">
-
-    <input id="jsonTreeInput" value="{jsonTree}" class="hidden">
-    <input id="info" value="{info}" class="hidden">
-
-
-    <f:comment><!--
-    Page HTML
-    --></f:comment>
-
-    <div class="container-fluid">
-        <div class="row d-flex">
-            <div id="cat-tree-div" class="col-9">
-                <ul id="cat-tree"></ul>
-            </div>
-
-<!--            <div id="folder-tree" class="col-4"></div>-->
-
-            <div id="ext-conf" class="col">
-                <div id="ext-conf_header" class="row">
-                    <div class="row">
-                        <h1>category_treebuilder</h1>
-                    </div>
-                    <div class="row">
-                        <div class="row">
-                            <div id="ext-conf_version" class="col ">1.0.0 <span class="badge badge-dark">beta</span></div>
-                            <div id="ext-conf_socials" class="col">
-                                <a href="https://github.com/lepetitglacon/category_treebuilder" title="See on github" target="_blank">
-                                    <img src="{f:uri.image(src:'EXT:category_treebuilder/Resources/Public/Images/github.png', width:'32c', height:'32c')}">
-                                </a>
-                                <a href="https://extensions.typo3.org/extension/category_treebuilder" title="See on TER" target="_blank">
-                                    <img src="{f:uri.image(src:'EXT:category_treebuilder/Resources/Public/Images/typo3.png', width:'32c', height:'32c')}">
-                                </a>
-                                <a href="https://petitglacon.com" title="petitglacon.com" target="_blank">
-                                    <img src="{f:uri.image(src:'EXT:category_treebuilder/Resources/Public/Images/petitglacon.png', width:'32c', height:'32c')}">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr>
-
-                <div id="ext-conf_configuration" class="row">
-                    <h2>Configuration</h2>
-                    <form>
-                        <div class="form-group">
-                            <label for="ext-conf_form_rootPid">Root Parent ID for categories (pid)</label>
-                            <input type="number" class="form-control" id="ext-conf_form_rootPid">
-                        </div>
-
-                        <div class="form-check">
-                            <label for="ext-conf_form_autogenerateFolders">Autogenerate Folders for children categories</label>
-                            <input class="form-check-input position-static" type="checkbox" id="ext-conf_form_autogenerateFolders" value="autogenerate" >
-                        </div>
-                    </form>
-
-
-                </div>
-
-                <hr>
-
-                <div id="ext-conf_actions" class="row">
-                    <h2>Actions</h2>
-                    <button id="ext-conf_actions_textImporter" type="button" class="btn btn-light">Full text Importer</button>
-                    <button id="ext-conf_actions_generateFakeCategories" type="button" class="btn btn-light">Generate fake categories</button>
-                    <button id="ext-conf_actions_deleteAll" type="button" class="btn btn-danger">Delete all categories</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<f:comment><!--
-Utils used in JS
---></f:comment>
-
-<ul id="customMenu">
-    <li id="menuOption0"><core:icon identifier="actions-document-edit" size="small" /> Modify</li>
-    <hr>
-    <li id="menuOption1" class="disabled"><core:icon identifier="actions-paste-before" size="small" /> Add before</li>
-    <li id="menuOption2"><core:icon identifier="apps-pagetree-drag-move-into" size="small" /> Add inside</li>
-    <li id="menuOption3" class="disabled"><core:icon identifier="actions-paste-after" size="small" /> Add after</li>
-</ul>
-
-<div id="categoryFormModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 id="categoryFormModal-modalTitle" class="modal-title">Modal title</h5>
-                <button type="button" class="close categoryFormModalCloseButton" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="categoryFormModal-form">
-                    <div class="form-group">
-                        <label for="categoryFormModal-formTitle">Title</label>
-                        <input type="text" class="form-control" id="categoryFormModal-formTitle" required="required">
-                    </div>
-                    <div class="form-group">
-                        <label for="categoryFormModal-formParent">Parent Category ID <span>(parent)</span></label>
-                        <input type="number" class="form-control" id="categoryFormModal-formParent">
-                    </div>
-                    <div class="form-group">
-                        <label for="categoryFormModal-formPid">Parent Directory ID <span>(pid)</span></label>
-                        <input type="number" class="form-control" id="categoryFormModal-formPid">
-                    </div>
-                    <div class="form-group">
-                        <label for="categoryFormModal-formUid">Unique ID <span>(uid)</span></label>
-                        <input type="number" class="form-control" id="categoryFormModal-formUid" disabled>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="categoryFormModal-formSubmit" class="btn btn-primary">Save changes</button>
-                <button type="button" class="btn btn-secondary categoryFormModalCloseButton" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="icon" href="/favicon.ico">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Vite App</title>
+    </head>
+    <body>
+    <div id="app"></div>
+    </body>
+    </html>
 
 </f:section>
-
-</html>
