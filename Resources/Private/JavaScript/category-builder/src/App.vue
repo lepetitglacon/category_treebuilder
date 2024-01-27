@@ -1,18 +1,16 @@
 <script setup>
 import { BaseTree, Draggable, pro, OpenIcon } from '@he-tree/vue'
 import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
-import Icons from '@typo3/backend/icons.js';
 import { ref, onMounted } from 'vue';
 
 import '@he-tree/vue/style/default.css'
 import '@he-tree/vue/style/material-design.css'
+import Category from "@/components/Category.vue";
 
-Icons.getIcon('mimetypes-x-sys_category', Icons.sizes.small, null, 'disabled').then((icon) => {
-  category_icon.value = icon
-});
+import { store } from './hooks/useTreeConfig.js'
+import IndentInput from "@/components/IndentInput.vue";
 
 let counter = ref(0)
-let category_icon = ref('')
 const elements = ref([
   {
     id: 1,
@@ -28,18 +26,14 @@ const options = {}
 onMounted(async () => {
   let request = new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_index);
   const res = await request.get()
-  console.log(res)
   const data = await res.resolve()
   elements.value = data.tree
-  console.log(data)
 })
 
 const handleClick = (e) => {
-  console.log(e)
   counter.value += 4
 }
 const handleChange = (e) => {
-  console.log(e)
 }
 </script>
 
@@ -48,8 +42,9 @@ const handleChange = (e) => {
   </header>
 
   <main>
+    <IndentInput></IndentInput>
     <Draggable
-        indent="110"
+        :indent="store.indent"
         class="mtl-tree"
         v-model="elements"
         treeLine
@@ -58,19 +53,7 @@ const handleChange = (e) => {
         @before-drag-start="handleChange"
     >
       <template #default="{ node, stat }">
-        <OpenIcon
-            v-if="stat.children.length"
-            :open="stat.open"
-            class="mtl-mr"
-            @click.native="stat.open = !stat.open"
-        />
-        <input
-            class="mtl-checkbox mtl-mr"
-            type="checkbox"
-            v-model="stat.checked"
-        />
-        <span v-html="category_icon"></span>
-        <span class="mtl-ml">{{ node.title }}</span>
+        <Category :node="node" :stat="stat"/>
       </template>
     </Draggable>
   </main>
