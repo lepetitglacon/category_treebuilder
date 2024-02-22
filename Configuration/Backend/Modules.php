@@ -11,7 +11,7 @@ return [
         'workspaces' => 'live',
         'path' => '/category_treebuilder/',
         'iconIdentifier' => 'category_treebuilder',
-        'labels' => 'Category Tree Builder',
+        'labels' => 'LLL:EXT:category_treebuilder/Resources/Private/Language/locallang_mod.xlf',
         'extensionName' => 'CategoryTreebuilder',
         'controllerActions' => [
             \Petitglacon\CategoryTreebuilder\Controller\TreeController::class => [
