@@ -56,11 +56,12 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $this->pageRenderer->loadJavaScriptModule('sortablejs');
         // CTB JS
         $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/index.js');
-        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/Category.js');
-        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/APICaller.js');
+//        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/index.js');
+//        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/Category.js');
+//        $this->pageRenderer->loadJavaScriptModule('@petitglacon/category-treebuilder/APICaller.js');
 
         // add css
-        $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/Styles/styles.css');
+        $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/dist/assets/index.css');
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $moduleTemplate->setContent($this->view->render());
