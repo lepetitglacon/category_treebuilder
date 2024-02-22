@@ -1,16 +1,12 @@
 <script setup>
-import { BaseTree, Draggable, pro, OpenIcon } from '@he-tree/vue'
 import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
 import { ref, onMounted } from 'vue';
 
-import '@he-tree/vue/style/default.css'
-import '@he-tree/vue/style/material-design.css'
 import Category from "@/components/Category.vue";
+import Nested from "@/components/Nested.vue";
 
-import { store } from './hooks/useTreeConfig.js'
-import IndentInput from "@/components/IndentInput.vue";
-
-let counter = ref(0)
+const drag = ref(false)
+const options = {}
 const elements = ref([
   {
     id: 1,
@@ -21,19 +17,25 @@ const elements = ref([
     name: 'titre 2'
   }
 ])
-const options = {}
 
 onMounted(async () => {
   let request = new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_index);
   const res = await request.get()
   const data = await res.resolve()
+  addRoot(data.tree)
   elements.value = data.tree
 })
 
-const handleClick = (e) => {
-  counter.value += 4
+function addRoot(tree) {
+	tree.unshift({
+		uid: 0,
+		title: 'Root',
+		parent: null
+	})
 }
-const handleChange = (e) => {
+
+const onTreeUpdate = (e) => {
+
 }
 </script>
 
@@ -42,20 +44,9 @@ const handleChange = (e) => {
   </header>
 
   <main>
-    <IndentInput></IndentInput>
-    <Draggable
-        :indent="store.indent"
-        class="mtl-tree"
-        v-model="elements"
-        treeLine
-        @change="handleChange"
-        @after-drop="handleChange"
-        @before-drag-start="handleChange"
-    >
-      <template #default="{ node, stat }">
-        <Category :node="node" :stat="stat"/>
-      </template>
-    </Draggable>
+
+	  <Nested :children="elements" />
+
   </main>
 </template>
 

@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build --watch",
+    "dev": "vite build --watch",
     "preview": "vite preview"
   },
   "dependencies": {
+    "vuedraggable@next": "^4.0",
     "vue": "^3.3.11"
   },
   "devDependencies": {
