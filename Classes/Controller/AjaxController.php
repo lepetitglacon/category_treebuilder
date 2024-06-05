@@ -7,19 +7,12 @@ namespace Petitglacon\CategoryTreebuilder\Controller;
 use Doctrine\DBAL\Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Petitglacon\CategoryTreebuilder\Builder\TreeBuilder;
-use Petitglacon\CategoryTreebuilder\Enum\FileType;
 use Petitglacon\CategoryTreebuilder\Manager\FileManager;
 use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
 use Petitglacon\CategoryTreebuilder\Object\Category;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Http\ServerRequest;
 
 #[Controller]
 class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
@@ -32,11 +25,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param QueryManager $queryManager
      */
     public function __construct(
-        private readonly FileManager             $fileManager,
-        private readonly TreeBuilder             $treeBuilder,
-        protected readonly ModuleTemplateFactory $moduleTemplateFactory,
-        private readonly PageRenderer            $pageRenderer,
-        private readonly QueryManager            $queryManager,
+        private readonly TreeBuilder $treeBuilder,
     ) {}
 
     /**
@@ -61,8 +50,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * Move a category to a new parent
-     *
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
     public function move(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
@@ -157,52 +145,6 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * Insert or update a category
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
-     */
-    public function insertOrUpdate(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
-    {
-//        $args = $request->getParsedBody();
-//        $categoryFromRequest = $args['category'];
-//
-//        $this->verifyCategoryFromRequest();
-//
-//        if ($args['category']['uid']) {
-//            $catFromDB = $this->queryManager->getCategory($categoryFromRequest['uid']);
-//        }
-//
-//        $cat = new Category(
-//            $categoryFromRequest['uid'],
-//            $categoryFromRequest['pid'],
-//            $categoryFromRequest['parent'],
-//            $categoryFromRequest['title']
-//        );
-////
-//        $res = $this->queryManager->insertCategory($cat);
-//
-//        if ($res['rows'] === 1) {
-//            $success = true;
-//            $message = 'category ' . $res['uid'] . ' created';
-//        } else {
-//            $success = false;
-//            $message = 'category ' . $res['uid'] . ' could not be created';
-//        }
-//
-//        return $this->jsonResponse(json_encode([
-//            'success' => $success,
-//            'uid' => $res['uid'],
-//            'message' => $message
-//        ]));
-
-        return $this->jsonResponse(json_encode([
-            'success' => false,
-            'message' => 'TODO'
-        ]));
-    }
-
-    /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      * @throws Exception
@@ -214,14 +156,17 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $categories = [];
 
         $categoriesStartUids = $this->queryManager->getLastInsertedUid();
+        $allreadyAffectedUids = [];
+        $allreadyAffectedUids[] = $categoriesStartUids;
 
         for ($i = 0; $i < 100; $i++) {
             $cat = new Category(
                 ++$categoriesStartUids,
-                3,
-                $faker->randomElement([25, 28, 30, $categoriesStartUids-1]),
-                implode(' ', $faker->words($i % 5))
+                1,
+                $faker->randomElement($allreadyAffectedUids),
+                $faker->words($i % 5, true)
             );
+            $allreadyAffectedUids[] = $categoriesStartUids;
             $categories[] = $cat->toArray();
         }
 
@@ -231,11 +176,5 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             'message' => 'TEST',
         ]));
     }
-
-
-    private function verifyCategoryFromRequest() {
-
-    }
-
 
 }

@@ -2,24 +2,28 @@
 
 namespace Petitglacon\CategoryTreebuilder\Builder;
 
+use Petitglacon\CategoryTreebuilder\Domain\Model\Category;
+use Petitglacon\CategoryTreebuilder\Domain\Repository\CategoryRepository;
 use Petitglacon\CategoryTreebuilder\Import\ImporterCsv;
 use Petitglacon\CategoryTreebuilder\Import\ImporterText;
 use Petitglacon\CategoryTreebuilder\Enum\FileType;
-use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 class TreeBuilder
 {
+    /** @var CategoryRepository $categoryRepository */
+    private CategoryRepository $categoryRepository;
 
-    /**
-     * @var QueryManager $queryManager
-     */
-    private QueryManager $queryManager;
+    /** @var PersistenceManager $persistenceManager */
+    private PersistenceManager $persistenceManager;
 
-    public function __construct(QueryManager $queryManager)
+    public function __construct(
+        CategoryRepository $categoryRepository,
+        PersistenceManager $persistenceManager
+    )
     {
-        $this->queryManager = $queryManager;
+        $this->categoryRepository = $categoryRepository;
+        $this->persistenceManager = $persistenceManager;
     }
 
     public function buildBackendTree($content, int $type) {
@@ -50,39 +54,51 @@ class TreeBuilder
         }
     }
 
-    public function buildFrontendTree(): bool|array
+    private function getCategories()
     {
-        $dbCategories[0] = ['uid' => 0];
-
-        foreach ($this->queryManager->getCategoriesForFrontend() as $cat) {
-            $dbCategories[$cat['uid']] = $cat;
-        }
-
-        if (count($dbCategories) <= 1) {
-            return [];
-        } else {
-            $new = [];
-            foreach ($dbCategories as $a){
-                if ($a['uid'] == 0) {
-                    continue;
-                }
-                $a['depth'] = $this->findDepth($a, $dbCategories);
-                $new[$a['parent']][] = $a;
-            }
-            return $this->createFrontendTreeNode($new, $new[0]);
-        }
+        return $this->categoryRepository->findAll();
     }
 
-    private function createFrontendTreeNode(&$list, $parents): array
+    public function buildFrontendTree(): bool|array
     {
-        $tree = [];
-        foreach ($parents as $key => $category){
-            if(isset($list[$category['uid']])){
-                $category['children'] = $this->createFrontendTreeNode($list, $list[$category['uid']]);
-            }
-            $tree[] = $category;
+        $rootCategory = new Category();
+        $rootCategory->setTitle('--Category Root--');
+        $rootCategory->setUid(0);
+        $rootCategory->setPid(0);
+        $flattenCategories[0] = $rootCategory;
+
+        foreach ($this->getCategories() as $category) {
+            $flattenCategories[$category->getUid()] = $category;
         }
-        return $tree;
+
+        if (count($flattenCategories) < 1) {
+            return [];
+        }
+
+        $tree = [];
+        foreach ($flattenCategories as $category){
+            if ($category->getUid() === 0) {
+                continue;
+            }
+
+            $tree[$category->getParent()?->getUid() ?? 0][] = $category->toArray();
+        }
+
+        return $this->createTreeNode($tree, $tree[0]);
+    }
+
+    private function createTreeNode(&$tree, $parents): array
+    {
+        $childrenTree = [];
+        foreach ($parents as $parentUid => $category) {
+
+            if(isset($tree[$category['uid']])) {
+                $category['children'] = $this->createTreeNode($tree, $tree[$category['uid']]);
+            }
+
+            $childrenTree[] = $category;
+        }
+        return $childrenTree;
     }
 
     private function findDepth($category, $array): int
