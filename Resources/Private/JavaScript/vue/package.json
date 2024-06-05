@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vuedraggable@next": "^4.0",
-    "vue": "^3.3.11"
+    "vue": "^3.3.11",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",

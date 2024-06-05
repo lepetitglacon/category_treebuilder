@@ -1,3 +1,13 @@
+<template>
+    <div id="tree-div">
+      <Nested :children="treeElements" />
+    </div>
+
+    <div>
+      <button data-action="category_treebuilder_generatefakedata" @click="handleActionButton">Generate fake categories</button>
+    </div>
+</template>
+
 <script setup>
 import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
 import { ref, onMounted } from 'vue';
@@ -7,7 +17,7 @@ import Nested from "@/components/Nested.vue";
 
 const drag = ref(false)
 const options = {}
-const elements = ref([
+const treeElements = ref([
   {
     id: 1,
     name: 'titre 1'
@@ -22,8 +32,9 @@ onMounted(async () => {
   let request = new AjaxRequest(TYPO3.settings.ajaxUrls.category_treebuilder_index);
   const res = await request.get()
   const data = await res.resolve()
+  console.log(data)
   addRoot(data.tree)
-  elements.value = data.tree
+  treeElements.value = data.tree
 })
 
 function addRoot(tree) {
@@ -37,44 +48,24 @@ function addRoot(tree) {
 const onTreeUpdate = (e) => {
 
 }
+
+const handleActionButton = async (e) => {
+  let request = new AjaxRequest(TYPO3.settings.ajaxUrls[e.target.dataset['action']]);
+  const res = await request.get()
+  const data = await res.resolve()
+  console.log(data)
+}
 </script>
 
-<template>
-  <header>
-  </header>
+<style>
+#app {
+  display: flex;
 
-  <main>
-
-	  <Nested :children="elements" />
-
-  </main>
-</template>
-
-<style scoped>
-header {
-  line-height: 1.5;
+  width: 100vw;
+  height: 100vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+#tree-div {
+  width: 50vw;
 }
 </style>
