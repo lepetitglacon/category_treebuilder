@@ -27,4 +27,8 @@ return [
         'path' => '/category_treebuilder/generatefakedata',
         'target' => AjaxController::class . '::generateFakeData',
     ],
+    'category_treebuilder_deleteall' => [
+        'path' => '/category_treebuilder/deleteall',
+        'target' => AjaxController::class . '::deleteAll',
+    ],
 ];
