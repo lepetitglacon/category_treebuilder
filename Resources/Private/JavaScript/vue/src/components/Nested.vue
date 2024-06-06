@@ -11,28 +11,48 @@ Icons.getIcon('mimetypes-x-sys_category', Icons.sizes.small, null, 'disabled').t
 const props = defineProps({
 	children: []
 })
+
+function getStyles() {
+  return {
+    background: getRandomHexColor()
+  }
+}
+
+function getRandomHexColor() {
+  return '#' + Math.floor(Math.random()*16777215).toString(16)
+}
+
+function handleChange(e) {
+  console.log(e)
+}
 </script>
 
 <template>
 	<draggable
-		class="dragArea"
+    @update="handleChange"
+    @change="handleChange"
+		class="draggable-item"
 		tag="ul"
 		:list="children"
 		:group="{ name: 'g1' }"
 		item-key="uid"
 	>
     <template #item="{ element }">
-			<li>
+			<li :style="getStyles">
         <p><span v-html="category_icon"></span>{{ element.title }}</p>
-				<Nested :children="element.children" />
+				<Nested v-if="element.children" :children="element.children" />
+<!--				<Nested v-else :children="element.children" :class="'empty-draggable-item'" />-->
 			</li>
 		</template>
 	</draggable>
 </template>
 
 <style scoped>
-.dragArea {
-	min-height: 30px;
-	//outline: 1px dashed;
+.draggable-item {
+	//outline: 1px dashed #00bd7e;
+}
+.empty-draggable-item {
+  background: #eee;
+  min-height: 10px;
 }
 </style>

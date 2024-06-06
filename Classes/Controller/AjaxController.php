@@ -5,27 +5,30 @@ declare(strict_types=1);
 namespace Petitglacon\CategoryTreebuilder\Controller;
 
 use Doctrine\DBAL\Exception;
+use Petitglacon\CategoryTreebuilder\Domain\Model\Category;
+use Petitglacon\CategoryTreebuilder\Domain\Repository\CategoryRepository;
+use Petitglacon\CategoryTreebuilder\Enum\ToastStatus;
+use Petitglacon\CategoryTreebuilder\Utility\AjaxResponseUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Petitglacon\CategoryTreebuilder\Builder\TreeBuilder;
 use Petitglacon\CategoryTreebuilder\Manager\FileManager;
 use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
-use Petitglacon\CategoryTreebuilder\Object\Category;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 #[Controller]
 class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
     /**
-     * @param FileManager $fileManager
      * @param TreeBuilder $treeBuilder
-     * @param ModuleTemplateFactory $moduleTemplateFactory
-     * @param PageRenderer $pageRenderer
-     * @param QueryManager $queryManager
+     * @param CategoryRepository $categoryRepository
      */
     public function __construct(
         private readonly TreeBuilder $treeBuilder,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly PersistenceManager $persistenceManager
     ) {}
 
     /**
@@ -36,37 +39,21 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     public function index(): \Psr\Http\Message\ResponseInterface
     {
         $tree = $this->treeBuilder->buildFrontendTree();
-
-        $success = false;
-        if ($tree) {
-            $success = true;
-        }
-
-        return $this->jsonResponse(json_encode([
-            'success' => $success,
-            'tree' => $tree,
-            'message' => 'message'
-        ]));
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+            ToastStatus::SUCCESS,
+            'Tree loaded',
+            $tree,
+            false
+        ));
     }
 
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function move(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+    public function move(Category $category): \Psr\Http\Message\ResponseInterface
     {
-        $args = $request->getParsedBody();
-        $uid = $args['uid'];
-        $parent = $args['parent'];
-
-        $res = $this->queryManager->updateParent($uid, $parent);
-
-        if ($res) {
-            $success = true;
-        } else {
-            $success = false;
-        }
-
+        $this->categoryRepository->update($category);
         return $this->jsonResponse(json_encode([
             'success' => $success,
             'message' => 'TODO'
@@ -144,37 +131,28 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         ]));
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
-     * @throws Exception
-     */
+    public function deleteAll(): ResponseInterface {
+        $this->categoryRepository->removeAll();
+        $this->persistenceManager->persistAll();
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(ToastStatus::SUCCESS, 'All categories were removed'));
+    }
+
     public function generateFakeData(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface {
         $faker = \Faker\Factory::create();
 
-        /** @var Category[] $categories */
-        $categories = [];
-
-        $categoriesStartUids = $this->queryManager->getLastInsertedUid();
-        $allreadyAffectedUids = [];
-        $allreadyAffectedUids[] = $categoriesStartUids;
-
+        $parents = [];
         for ($i = 0; $i < 100; $i++) {
-            $cat = new Category(
-                ++$categoriesStartUids,
-                1,
-                $faker->randomElement($allreadyAffectedUids),
-                $faker->words($i % 5, true)
-            );
-            $allreadyAffectedUids[] = $categoriesStartUids;
-            $categories[] = $cat->toArray();
+            $category = new Category();
+            $category->setPid(0);
+            $category->setTitle($faker->words($faker->numberBetween(1, 10), true));
+            $category->setParent($faker->randomElement($parents));
+
+            $parents[] = $category;
+            $this->categoryRepository->add($category);
         }
 
-        $success = $this->queryManager->bulkInsert($categories) > 0;
-        return $this->jsonResponse(json_encode([
-            'success' => $success,
-            'message' => 'TEST',
-        ]));
+        $this->persistenceManager->persistAll();
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(ToastStatus::SUCCESS, 'Fake data generated'));
     }
 
 }
