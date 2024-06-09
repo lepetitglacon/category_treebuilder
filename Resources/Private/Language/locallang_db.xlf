@@ -6,15 +6,6 @@
 			<trans-unit id="tx_categorytreebuilder_domain_model_category" resname="tx_categorytreebuilder_domain_model_category">
 				<source>Category</source>
 			</trans-unit>
-			<trans-unit id="tx_categorytreebuilder_domain_model_category.title" resname="tx_categorytreebuilder_domain_model_category.title">
-				<source>Title</source>
-			</trans-unit>
-			<trans-unit id="tx_categorytreebuilder_domain_model_tree" resname="tx_categorytreebuilder_domain_model_tree">
-				<source>Tree</source>
-			</trans-unit>
-			<trans-unit id="tx_categorytreebuilder_domain_model_tree.title" resname="tx_categorytreebuilder_domain_model_tree.title">
-				<source>Title</source>
-			</trans-unit>
 		</body>
 	</file>
 </xliff>

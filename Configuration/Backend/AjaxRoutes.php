@@ -16,10 +16,6 @@ return [
         'methods' => ['POST'],
         'target' => AjaxController::class . '::updateAction',
     ],
-    'category_treebuilder_move' => [
-        'path' => '/category_treebuilder/move',
-        'target' => AjaxController::class . '::moveAction',
-    ],
     'category_treebuilder_generatefakedata' => [
         'path' => '/category_treebuilder/generatefakedata',
         'target' => AjaxController::class . '::generateFakeDataAction',

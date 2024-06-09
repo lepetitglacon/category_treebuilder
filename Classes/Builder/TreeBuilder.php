@@ -26,39 +26,17 @@ class TreeBuilder
         $this->persistenceManager = $persistenceManager;
     }
 
-    public function buildBackendTree($content, int $type) {
-        $categories = [];
-
-        switch ($type) {
-            case FileType::TEXT:
-                $importer = new ImporterText($content);
-                $categories = $importer->getCategories();
-                break;
-
-            case FileType::CSV:
-                $importer = new ImporterCsv($content);
-                $categories = $importer->getCategories();
-                break;
-
-            case FileType::JSON:
-                break;
-
-            case FileType::PASSTHRGOUH:
-                $categories = $content;
-                break;
-        }
-
-        if (count($categories)) {
-//            $this->queryManager->truncate();
-            return $this->queryManager->insertOrUpdateCategories($categories);
-        }
-    }
-
+    /**
+     * @return array|\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface[]|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
     private function getCategories()
     {
         return $this->categoryRepository->findAll();
     }
 
+    /**
+     * @return bool|array
+     */
     public function buildFrontendTree(): bool|array
     {
         $rootCategory = new Category();
@@ -88,6 +66,11 @@ class TreeBuilder
         return $this->createTreeNode($tree, $tree[0]);
     }
 
+    /**
+     * @param $tree
+     * @param $parents
+     * @return array
+     */
     private function createTreeNode(&$tree, $parents): array
     {
         $rootTree = [];
@@ -106,8 +89,6 @@ class TreeBuilder
                     );
                 }
             }
-
-
             $rootTree[] = $category;
         }
 

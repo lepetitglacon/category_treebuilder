@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Petitglacon\CategoryTreebuilder\Controller;
 
-use Doctrine\DBAL\Exception;
 use Petitglacon\CategoryTreebuilder\Domain\Model\Category;
 use Petitglacon\CategoryTreebuilder\Domain\Repository\CategoryRepository;
 use Petitglacon\CategoryTreebuilder\Enum\ToastStatus;
 use Petitglacon\CategoryTreebuilder\Utility\AjaxResponseUtility;
+use phpDocumentor\Reflection\Types\This;
 use Psr\Http\Message\ServerRequestInterface;
 use Petitglacon\CategoryTreebuilder\Builder\TreeBuilder;
-use Petitglacon\CategoryTreebuilder\Manager\FileManager;
-use Petitglacon\CategoryTreebuilder\Manager\QueryManager;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 #[Controller]
@@ -50,21 +46,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
-     */
-    public function moveAction(Category $category): \Psr\Http\Message\ResponseInterface
-    {
-//        $this->categoryRepository->update($category);
-        return $this->jsonResponse(json_encode([
-            'success' => true,
-            'message' => 'TODO'
-        ]));
-    }
-
-    /**
-     * Insert a new category
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     public function insertAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
@@ -81,7 +63,6 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $category->setParent($parent ?? $category->getParent());
         }
 
-
         $this->categoryRepository->add($category);
         $this->persistenceManager->persistAll();
 
@@ -95,7 +76,10 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
     public function updateAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
@@ -140,6 +124,11 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         );
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     */
     public function deleteAction(ServerRequestInterface $request): ResponseInterface {
         $args = $request->getParsedBody()['category'];
 
@@ -168,12 +157,20 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         );
     }
 
+    /**
+     * @return ResponseInterface
+     */
     public function deleteAllAction(): ResponseInterface {
         $this->categoryRepository->removeAll();
         $this->persistenceManager->persistAll();
         return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(ToastStatus::SUCCESS, 'All categories were removed'));
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     */
     public function generateFakeDataAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface {
         $faker = \Faker\Factory::create();
 
