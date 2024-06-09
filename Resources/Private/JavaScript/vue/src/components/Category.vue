@@ -1,8 +1,8 @@
 <template>
 
     <ContextMenu :category="element">
-      <p class="category">
-        <span :title="element.uid" v-html="categoryIconHtml"/>
+      <p class="category" >
+        <T3Icon :title="'uid: ' + element.uid + ' pid: ' + element.pid" name="mimetypes-x-sys_category"/>
         {{ element.title }}
       </p>
     </ContextMenu>
@@ -11,26 +11,27 @@
 </template>
 
 <script setup>
-import Icons from '@typo3/backend/icons.js';
-import { ref } from 'vue';
 import ContextMenu from "@/components/ContextMenu.vue";
-import {ContextMenuRoot} from "radix-vue";
+import T3Icon from "@/components/T3Icon.vue";
 
 const props = defineProps({
   element: {}
 })
 
-let categoryIconHtml = ref('')
-Icons.getIcon('mimetypes-x-sys_category', Icons.sizes.small, null, 'disabled').then((icon) => {
-  categoryIconHtml.value = icon
-});
-
 </script>
 
-<style scoped>
+<style>
 .category {
   padding-bottom: 0;
   margin-bottom: 0;
   word-break: keep-all;
+}
+
+.category-disabled {
+  pointer-events: none;
+  cursor: default;
+}
+.category-disabled:hover {
+  background: initial;
 }
 </style>

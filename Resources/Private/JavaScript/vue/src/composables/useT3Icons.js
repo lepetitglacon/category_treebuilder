@@ -4,6 +4,7 @@ import {useToast} from "vue-toast-notification";
 const $toast = useToast();
 
 const icons = {
+    'mimetypes-x-sys_category': null,
     'actions-chevron-right': null,
     'actions-document-edit': null,
     'actions-document-view': null,

@@ -1,9 +1,9 @@
 import {ref, onMounted, watch} from "vue";
 
-const currentCategory = ref()
+const contextMenuInfos = ref({})
 
 export function useContextMenu() {
     return {
-        currentCategory
+        contextMenuInfos: contextMenuInfos
     }
 }

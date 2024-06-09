@@ -11,6 +11,9 @@ export default defineConfig({
     rollupOptions: {
       external: [
           '@typo3/core/ajax/ajax-request.js',
+          '@typo3/backend/modal.js',
+          '@typo3/backend/severity.js',
+          '@typo3/backend/action-button/deferred-action.js',
           '@typo3/backend/icons.js'
       ],
       output: {

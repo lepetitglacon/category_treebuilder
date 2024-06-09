@@ -16,7 +16,7 @@
         </button>
       </div>
 
-      <div class="category-container">
+      <div class="category-container" :class="element.uid === 0 ? 'category-disabled' : 'test'">
         <Category :element="element"/>
       </div>
 
@@ -25,10 +25,10 @@
     <CollapsibleContent class="">
 
       <li>
-        <Nested v-if="element.children" :element="element" :children="element.children" />
+        <CategoryTree v-if="element.children" :element="element" :children="element.children" />
 
         <!-- permet de pouvoir ajouter des enfants quand il n'y en a pas -->
-        <!--				<Nested v-else :children="element.children" :class="'empty-draggable-item'" />-->
+        <CategoryTree v-else :element="element" :children="element.children" />
       </li>
     </CollapsibleContent>
 
@@ -37,7 +37,7 @@
 
 <script setup>
 import Icons from '@typo3/backend/icons.js';
-import Nested from "@/components/Nested.vue";
+import CategoryTree from "@/components/CategoryTree.vue";
 import {CollapsibleContent, CollapsibleRoot, CollapsibleTrigger} from "radix-vue";
 import Category from "@/components/Category.vue";
 import {onMounted, ref, watch} from "vue";

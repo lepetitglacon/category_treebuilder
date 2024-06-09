@@ -2,36 +2,45 @@
   <ContextMenuRoot>
     <ContextMenuTrigger
         as-child
-        class=""
     >
       <slot></slot>
     </ContextMenuTrigger>
 
     <ContextMenuPortal>
       <ContextMenuContent
-          class="dropdown-menu"
+          v-if="category.uid !== 0"
+          class=""
           :side-offset="5"
       >
         <ContextMenuItem value="New Tab">
           <DialogTrigger
               as="div"
-              class="context-trigger dropdown-item"
               @click="changeContextMenuValues"
           >
             Modify
           </DialogTrigger>
         </ContextMenuItem>
 
-        <ContextMenuSeparator as="hr" class="dropdown-divider" />
+        <ContextMenuSeparator as="hr" class="dropdown-divider"/>
 
-        <ContextMenuItem value="New Tab" @click="handleClick">
-          <div>New Category (inside)</div>
+        <ContextMenuItem value="New Tab">
+          <DialogTrigger
+              as="div"
+              @click="prepareContextMenuValuesForInsertInside"
+          >
+            New Category (inside)
+          </DialogTrigger>
         </ContextMenuItem>
-        <ContextMenuItem value="New Tab" @click="handleClick">
-          <div>New Category (after)</div>
+        <ContextMenuItem value="New Tab">
+          <DialogTrigger
+              as="div"
+              @click="prepareContextMenuValuesForInsertAfter"
+          >
+            New Category (after)
+          </DialogTrigger>
         </ContextMenuItem>
 
-        <ContextMenuSeparator as="hr" class="dropdown-divider" />
+        <ContextMenuSeparator as="hr" class="dropdown-divider"/>
 
         <ContextMenuItem value="New Tab" @click="handleClick">
           <div>New Categories (inside)</div>
@@ -40,10 +49,10 @@
           <div>New Categories (after)</div>
         </ContextMenuItem>
 
-        <ContextMenuSeparator as="hr" class="dropdown-divider" />
+        <ContextMenuSeparator as="hr" class="dropdown-divider"/>
 
-        <ContextMenuItem value="New Tab" @click="handleClick">
-          <div class="btn-danger">Delete</div>
+        <ContextMenuItem class="bg-danger text-white" value="New Tab" @click="handleDelete">
+          <span>Delete</span>
         </ContextMenuItem>
 
       </ContextMenuContent>
@@ -64,29 +73,92 @@ import {
 } from 'radix-vue'
 import {ref} from "vue";
 import {useContextMenu} from '../composables/useContextMenu.js'
-const {currentCategory} = useContextMenu()
+import useT3Api from "@/composables/useT3Api.js";
+import Modal from '@typo3/backend/modal.js';
+import Severity from '@typo3/backend/severity.js';
+import DeferredAction from "@typo3/backend/action-button/deferred-action.js";
+
+
+const {contextMenuInfos} = useContextMenu()
+const {makeT3Request, makeT3PostRequest} = useT3Api()
+
 
 const props = defineProps({
   category: {}
 })
 
-
 const open = ref(false)
 
 
 function changeContextMenuValues(e) {
-  currentCategory.value = props.category
+  contextMenuInfos.value.title = `Modify Category "${props.category.title}"`
+  contextMenuInfos.value.description = ''
+  contextMenuInfos.value.action = 'category_treebuilder_update'
+  contextMenuInfos.value.submitButtonTitle = 'Update'
+  contextMenuInfos.value.category = props.category
 }
+
+function prepareContextMenuValuesForInsertInside(e) {
+  contextMenuInfos.value.title = `Create new category inside "${props.category.title}"`
+  contextMenuInfos.value.description = 'Enter the name and click on "create"'
+  contextMenuInfos.value.action = 'category_treebuilder_insert'
+  contextMenuInfos.value.submitButtonTitle = 'Create'
+  contextMenuInfos.value.category = {
+    title: '',
+    uid: '',
+    pid: props.category.pid,
+    parent: props.category.uid
+  }
+}
+
+function prepareContextMenuValuesForInsertAfter(e) {
+  contextMenuInfos.value.title = `Create new category after "${props.category.title}"`
+  contextMenuInfos.value.description = 'Enter the name and click on "create"'
+  contextMenuInfos.value.action = 'category_treebuilder_insert'
+  contextMenuInfos.value.submitButtonTitle = 'Create'
+  contextMenuInfos.value.category = {
+    title: '',
+    uid: '',
+    pid: props.category.pid,
+    parent: props.category.parent
+  }
+}
+
 function handleClickModify(e) {
   console.log(e, props.category)
 }
 
+async function handleDelete() {
+  Modal.confirm(
+      'Delete category ?',
+      `Do you really want to delete the category "${props.category.title}" [${props.category.uid}] ?`,
+      Severity.warning,
+      [
+        {
+          text: 'Cancel',
+          trigger: function () {
+            Modal.dismiss();
+          }
+        },
+        {
+          text: 'Delete',
+          btnClass: 'btn-danger',
+          action: new DeferredAction(async () => {
+            return await makeT3PostRequest('category_treebuilder_delete', {
+              "category[__identity]": props.category.uid
+            })
+          })
+        }
+      ]
+  );
+}
+
 function handleClick() {
-  alert('hello!')
+  alert('not implemented yet')
 }
 </script>
 
-<style>
+<style scoped>
 /* Target the menu content */
 [data-radix-popper-content-wrapper] {
   min-width: 2000px;
@@ -112,14 +184,19 @@ function handleClick() {
 }
 
 .context-trigger {
-  position: relative;
+  position: relative !important;
   background: none;
   color: inherit;
   border: none;
   padding: 0;
+  margin: 0;
   font: inherit;
   cursor: pointer;
   outline: inherit;
+  width: 100%;
 }
 
+.dropdown-divider {
+  border: 1px solid #eee;
+}
 </style>

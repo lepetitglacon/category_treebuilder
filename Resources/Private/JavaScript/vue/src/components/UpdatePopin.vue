@@ -5,8 +5,12 @@
         class="dialog-content"
     >
       <DialogTitle class="text-mauve12 m-0 text-[17px] font-semibold">
-        Modify category
+        {{ contextMenuInfos.title }}
       </DialogTitle>
+
+      <DialogDescription class="text-mauve12 m-0 text-[17px] font-semibold">
+        {{ contextMenuInfos.description }}
+      </DialogDescription>
 
       <form ref="form">
         <div class="my-5">
@@ -15,7 +19,7 @@
               id="update-modal-title"
               name="category[title]"
               class="form-control"
-              :value="currentCategory.title"
+              :value="contextMenuInfos.category.title"
           >
             </textarea>
         </div>
@@ -23,7 +27,7 @@
         <fieldset>
           <div class="col-auto">
               <span id="passwordHelpInline" class="form-text">
-                You should know what you're doing by modifying these fields
+                Modify these fields only if you should know what you're doing
               </span>
           </div>
 
@@ -33,7 +37,7 @@
                 id="update-modal-uid"
                 name="category[uid]"
                 class="form-control"
-                :value="currentCategory.uid"
+                :value="contextMenuInfos.category.uid"
                 disabled readonly
             >
           </div>
@@ -43,7 +47,7 @@
                 id="update-modal-pid"
                 name="category[pid]"
                 class="form-control"
-                :value="currentCategory.pid"
+                :value="contextMenuInfos.category.pid"
             >
           </div>
           <div>
@@ -52,10 +56,10 @@
                 id="update-modal-parent"
                 name="category[parent]"
                 class="form-control"
-                :value="currentCategory.parent"
+                :value="contextMenuInfos.category.parent"
             >
           </div>
-          <input type="hidden" name="category[__identity]" :value="currentCategory.uid">
+          <input type="hidden" name="category[__identity]" :value="contextMenuInfos.category.uid">
         </fieldset>
 
         <div class="mt-[25px] flex justify-end">
@@ -63,9 +67,9 @@
             <button
                 type="submit"
                 class="btn btn-primary my-3"
-                @click.prevent="handleCategoryUpdate"
+                @click.prevent="handleSubmit"
             >
-              Update
+              {{ contextMenuInfos.submitButtonTitle }}
             </button>
           </DialogClose>
         </div>
@@ -81,30 +85,26 @@
 </template>
 
 <script setup>
-import {DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle} from "radix-vue";
+import {DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle} from "radix-vue";
 import {useContextMenu} from "@/composables/useContextMenu.js";
 import {useCategoryTree} from "@/composables/useCategoryTree.js";
 import {useCollapsibleRefs} from "@/composables/useCollapsibleRefs.js";
 import useT3Api from "@/composables/useT3Api.js";
 import {ref} from "vue";
 
-const {currentCategory} = useContextMenu()
+const {contextMenuInfos} = useContextMenu()
 const {tree, loadTree} = useCategoryTree()
 const {collapse, expend} = useCollapsibleRefs()
 const {makeT3Request, makeT3PostRequest} = useT3Api()
 
 const form = ref()
 
-async function handleCategoryUpdate(e) {
-
+async function handleSubmit(e) {
   const inputData = {}
   for (const [key, val] of new FormData(form.value).entries()) {
     inputData[key] = val
   }
-  const data = await makeT3PostRequest('category_treebuilder_update', inputData)
-  if (data.reloadTree) {
-    await loadTree()
-  }
+  const data = await makeT3PostRequest(contextMenuInfos.value.action, inputData)
 }
 </script>
 

@@ -1,10 +1,12 @@
 <template>
+
 	<draggable
     @update="handleMove"
     @change="handleMove"
     :move="onMove"
 		class="draggable-item"
 		tag="ul"
+    filter=".category-disabled"
 		:list="children"
 		:group="{ name: 'g1' }"
 		item-key="uid"
@@ -30,7 +32,7 @@ import {useCategoryTree} from "@/composables/useCategoryTree.js";
 const {makeT3Request, makeT3PostRequest} = useT3Api()
 const {tree, loadTree} = useCategoryTree()
 
-const lastMoveEvent = ref()
+const lastSortableMoveEvent = ref()
 
 const props = defineProps({
   element: {},
@@ -38,10 +40,10 @@ const props = defineProps({
 })
 
 function onMove(e) {
-  lastMoveEvent.value = e
+  lastSortableMoveEvent.value = e
 }
 async function handleMove(e) {
-  console.log(e, lastMoveEvent.value)
+  console.log(e, lastSortableMoveEvent.value)
 
   if (!e instanceof CustomEvent || e.removed === undefined) {
     return
@@ -49,20 +51,16 @@ async function handleMove(e) {
 
   const data = await makeT3PostRequest('category_treebuilder_update',
       {
-        "category[__identity]": lastMoveEvent.value.draggedContext.element.uid,
-        "category[parent]": lastMoveEvent.value.to.dataset.uid,
+        "category[__identity]": lastSortableMoveEvent.value.draggedContext.element.uid,
+        "category[parent]": lastSortableMoveEvent.value.to.dataset.uid,
       }
   )
-  console.log(data)
-  if (data.reloadTree) {
-    await loadTree()
-  }
 }
 
 </script>
 
 <style scoped>
 .draggable-item {
-	//outline: 1px dashed #00bd7e;
+	/* outline: 1px dashed #00bd7e; */
 }
 </style>

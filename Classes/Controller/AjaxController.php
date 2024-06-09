@@ -68,31 +68,30 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function insertAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
-        $args = $request->getParsedBody();
-        $category = $args['category'];
+        $args = $request->getParsedBody()['category'];
 
-        $cat = new Category(
-            $category['uid'],
-            $category['pid'],
-            $category['parent'],
-            $category['title']
-        );
-//
-        $res = $this->queryManager->insertCategory($cat);
+        $category = new Category();
+        $category->setTitle($args['title']);
+        $category->setPid((int)$args['pid']);
 
-        if ($res['rows'] === 1) {
-            $success = true;
-            $message = 'category ' . $res['uid'] . ' created';
+        if ($args['parent'] == 0) {
+            $category->setParent(null);
         } else {
-            $success = false;
-            $message = 'category ' . $res['uid'] . ' could not be created';
+            $parent = $this->categoryRepository->findOneBy(['uid' => $args['parent']]);
+            $category->setParent($parent ?? $category->getParent());
         }
 
-        return $this->jsonResponse(json_encode([
-            'success' => $success,
-            'uid' => $res['uid'],
-            'message' => $message
-        ]));
+
+        $this->categoryRepository->add($category);
+        $this->persistenceManager->persistAll();
+
+        $title = $category->getTitle();
+        $categoryUid = $category->getUid();
+
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+            ToastStatus::SUCCESS,
+            "Category \"$title\" [$categoryUid] created")
+        );
     }
 
     /**

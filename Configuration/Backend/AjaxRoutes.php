@@ -7,10 +7,6 @@ return [
         'path' => '/category_treebuilder/index',
         'target' => AjaxController::class . '::indexAction',
     ],
-    'category_treebuilder_move' => [
-        'path' => '/category_treebuilder/move',
-        'target' => AjaxController::class . '::moveAction',
-    ],
     'category_treebuilder_insert' => [
         'path' => '/category_treebuilder/insert',
         'target' => AjaxController::class . '::insertAction',
@@ -20,9 +16,9 @@ return [
         'methods' => ['POST'],
         'target' => AjaxController::class . '::updateAction',
     ],
-    'category_treebuilder_insertorupdate' => [
-        'path' => '/category_treebuilder/insert',
-        'target' => AjaxController::class . '::insertOrUpdate',
+    'category_treebuilder_move' => [
+        'path' => '/category_treebuilder/move',
+        'target' => AjaxController::class . '::moveAction',
     ],
     'category_treebuilder_generatefakedata' => [
         'path' => '/category_treebuilder/generatefakedata',
@@ -31,5 +27,9 @@ return [
     'category_treebuilder_deleteall' => [
         'path' => '/category_treebuilder/deleteall',
         'target' => AjaxController::class . '::deleteAllAction',
+    ],
+    'category_treebuilder_delete' => [
+        'path' => '/category_treebuilder/delete',
+        'target' => AjaxController::class . '::deleteAction',
     ],
 ];
