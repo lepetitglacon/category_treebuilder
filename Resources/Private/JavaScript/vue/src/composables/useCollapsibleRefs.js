@@ -42,9 +42,22 @@ export function useCollapsibleRefs() {
         }
     })
 
+    function collapse(expend = false) {
+        console.log(Object.entries(refs))
+        for (const [key, currentRef] of Object.entries(refs)) {
+            currentRef.value = expend
+        }
+    }
+
+    function expend() {
+        collapse(true)
+    }
+
     return {
         createRef,
         addRef,
-        getRefs
+        getRefs,
+        collapse,
+        expend
     }
 }

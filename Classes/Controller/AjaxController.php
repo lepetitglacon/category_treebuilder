@@ -36,7 +36,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function index(): \Psr\Http\Message\ResponseInterface
+    public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
         $tree = $this->treeBuilder->buildFrontendTree();
         return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
@@ -51,11 +51,11 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function move(Category $category): \Psr\Http\Message\ResponseInterface
+    public function moveAction(Category $category): \Psr\Http\Message\ResponseInterface
     {
-        $this->categoryRepository->update($category);
+//        $this->categoryRepository->update($category);
         return $this->jsonResponse(json_encode([
-            'success' => $success,
+            'success' => true,
             'message' => 'TODO'
         ]));
     }
@@ -66,7 +66,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function insert(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+    public function insertAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
         $args = $request->getParsedBody();
         $category = $args['category'];
@@ -111,16 +111,23 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
 
         $category = $this->categoryRepository->findOneBy(['uid' => $categoryUid]);
-        $title = $category->getTitle();
         if (is_null($category)) {
             return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
                 ToastStatus::ERROR,
                 'Category not found in repository')
             );
         }
+        $title = $category->getTitle();
 
         $category->setTitle($args['title'] ?? $category->getTitle());
-        $category->setPid($args['pid'] ?: (int)$args['pid'] ?? $category->getPid());
+        $category->setPid($args['pid'] ? (int)$args['pid'] : null ?? $category->getPid());
+
+        if ($args['parent'] == 0) {
+            $category->setParent(null);
+        } else {
+            $parent = $this->categoryRepository->findOneBy(['uid' => $args['parent']]);
+            $category->setParent($parent ?? $category->getParent());
+        }
 
         // TODO sorting
         // https://stackoverflow.com/questions/36896377/typo3-commandcontroller-how-to-set-table-field-sorting-of-extbase-object
@@ -134,13 +141,41 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         );
     }
 
-    public function deleteAll(): ResponseInterface {
+    public function deleteAction(ServerRequestInterface $request): ResponseInterface {
+        $args = $request->getParsedBody()['category'];
+
+        $categoryUid = $args['__identity'] ?? $args['uid'] ?? null;
+        if (is_null($categoryUid)) {
+            return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+                ToastStatus::ERROR,
+                'Category uid not found')
+            );
+        }
+
+        $category = $this->categoryRepository->findOneBy(['uid' => $categoryUid]);
+        if (is_null($category)) {
+            return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+                ToastStatus::ERROR,
+                'Category not found in repository')
+            );
+        }
+        $title = $category->getTitle();
+
+        $this->categoryRepository->remove($category);
+        $this->persistenceManager->persistAll();
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+            ToastStatus::SUCCESS,
+            "Category $title has been removed")
+        );
+    }
+
+    public function deleteAllAction(): ResponseInterface {
         $this->categoryRepository->removeAll();
         $this->persistenceManager->persistAll();
         return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(ToastStatus::SUCCESS, 'All categories were removed'));
     }
 
-    public function generateFakeData(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface {
+    public function generateFakeDataAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface {
         $faker = \Faker\Factory::create();
 
         $parents = [];

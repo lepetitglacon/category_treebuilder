@@ -76,12 +76,13 @@ class TreeBuilder
         }
 
         $tree = [];
-        foreach ($flattenCategories as $category){
+        foreach ($flattenCategories as $category) {
             if ($category->getUid() === 0) {
+                $tree[0][] = $category->toArray();
                 continue;
             }
 
-            $tree[$category->getParent()?->getUid() ?? 0][] = $category->toArray();
+            $tree[$category->getParent()?->getUid() ?? 1][] = $category->toArray();
         }
 
         return $this->createTreeNode($tree, $tree[0]);
@@ -89,37 +90,27 @@ class TreeBuilder
 
     private function createTreeNode(&$tree, $parents): array
     {
-        $childrenTree = [];
+        $rootTree = [];
         foreach ($parents as $parentUid => $category) {
 
-            if(isset($tree[$category['uid']])) {
-                $category['children'] = $this->createTreeNode($tree, $tree[$category['uid']]);
+            if ($category['uid'] == 0) {
+                $category['children'] = $this->createTreeNode(
+                    $tree,
+                    $tree[1]
+                );
+            } else {
+                if(isset($tree[$category['uid']])) {
+                    $category['children'] = $this->createTreeNode(
+                        $tree,
+                        $tree[$category['uid']]
+                    );
+                }
             }
 
-            $childrenTree[] = $category;
-        }
-        return $childrenTree;
-    }
 
-    private function findDepth($category, $array): int
-    {
-        $depth = 0;
-        $cat = $category;
-
-        while (!empty($cat['parent'])) {
-            $depth++;
-            $cat = $array[$cat['parent']];
-            if ($depth >= 999) return $depth;
+            $rootTree[] = $category;
         }
 
-        return $depth;
-    }
-
-    public function buildExportTree() {
-        return $this->queryManager->getCategoriesForExport();
-    }
-
-    public function generateFakeData() {
-
+        return $rootTree;
     }
 }

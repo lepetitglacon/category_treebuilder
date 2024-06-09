@@ -25,7 +25,7 @@
     <CollapsibleContent class="">
 
       <li>
-        <Nested v-if="element.children" :children="element.children" />
+        <Nested v-if="element.children" :element="element" :children="element.children" />
 
         <!-- permet de pouvoir ajouter des enfants quand il n'y en a pas -->
         <!--				<Nested v-else :children="element.children" :class="'empty-draggable-item'" />-->
@@ -67,6 +67,7 @@ Icons.getIcon('miscellaneous-placeholder', Icons.sizes.small, null, 'disabled').
 .category-container {
   padding: 2px;
   border-radius: 3px;
+  cursor: pointer;
 }
 .category-container:hover {
   background: #eee;

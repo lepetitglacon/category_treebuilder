@@ -7,7 +7,10 @@ const icons = {
     'actions-chevron-right': null,
     'actions-document-edit': null,
     'actions-document-view': null,
-    'miscellaneous-placeholder': null
+    'miscellaneous-placeholder': null,
+    'apps-pagetree-category-expand-all': null,
+    'apps-pagetree-category-collapse-all': null,
+    'spinner-circle': null
 }
 
 async function loadIcons() {

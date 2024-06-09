@@ -9,20 +9,20 @@
 
     <ContextMenuPortal>
       <ContextMenuContent
-          class=""
+          class="dropdown-menu"
           :side-offset="5"
       >
         <ContextMenuItem value="New Tab">
           <DialogTrigger
               as="div"
-              class="context-trigger"
+              class="context-trigger dropdown-item"
               @click="changeContextMenuValues"
           >
             Modify
           </DialogTrigger>
         </ContextMenuItem>
 
-        <ContextMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+        <ContextMenuSeparator as="hr" class="dropdown-divider" />
 
         <ContextMenuItem value="New Tab" @click="handleClick">
           <div>New Category (inside)</div>
@@ -31,13 +31,19 @@
           <div>New Category (after)</div>
         </ContextMenuItem>
 
-        <ContextMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+        <ContextMenuSeparator as="hr" class="dropdown-divider" />
 
         <ContextMenuItem value="New Tab" @click="handleClick">
           <div>New Categories (inside)</div>
         </ContextMenuItem>
         <ContextMenuItem value="New Tab" @click="handleClick">
           <div>New Categories (after)</div>
+        </ContextMenuItem>
+
+        <ContextMenuSeparator as="hr" class="dropdown-divider" />
+
+        <ContextMenuItem value="New Tab" @click="handleClick">
+          <div class="btn-danger">Delete</div>
         </ContextMenuItem>
 
       </ContextMenuContent>
