@@ -4,13 +4,13 @@ Build and manage easily your category tree.
 ## Install
 
 > :warning: Do not install this extension in production environnement ! :warning: <br>
-> This extension is still in development phase, it might ruin your category folder structure or delete all your categories
+> This extension is still under development, it might ruin your category folder structure or delete all your categories
 > Install at your own risks
 
 ### Manual install
 1. Download the extension.
-2. Put the extension in a root folder of your TYPO3 site. `ex. "packages"`
-3. In your root composer.json add the following
+2. Put the extension in a root folder of your TYPO3 site. ex. `/packages`
+3. In your root `composer.json` add the following
 ```json
 	"repositories": [
 		{
@@ -23,26 +23,43 @@ Build and manage easily your category tree.
 5. You'll find the module under admin tab
 6. Enjoy
 
-## Main feature
-- Javscript category tree using SortableJS, create, move, delete your categories at will
+## Features
+- Category "CRUD" : create, update, delete your categories at will with contextual menu
+- Move entire category subtree in a simple drag and drop
+- LocalStorage keeps track of open/closed subtrees
+- Generate fake categories
 
 ## Roadmap
 reintroduce v11 features like
-- Built-in tab indented text builder
-- Category tree viewer + auto-scrolling with text builder
-- Category uid persistence (move categories without losing uids)
-- Import/export categories as ~~`text`~~, `csv`, ~~`json`~~ files
-- Auto export after each tree change (history)<br>
+- Import/export categories from/to `text`, `csv`, `json` files
+- Keep history of category tree
+<br>
 
 and continue growing this extension
-- toggle deleted categories view
+- Adding fields to handle in context menu
 - folders handling
 - typoscript settings
-- assuring quality (error handling, code optimisation, ...)
-- realtime javascript tree
+
+### Open source
+Don't hesitate to open issue for feature request or bugs
 
 ## Versions
 See version changelog in changelog.md
 
+## Screenshots
+### Backend module
+![img.png](./Documentation/readme/backendmodule.png)
+### Contextual menu
+![img_1.png](./Documentation/readme/contextmenu.png)
+### Create/Update Modal
+![img_5.png](./Documentation/readme/modal.png)
+
+## Dev
+### Build
+You'll need to build the Vue app to modify the backend module<br/>
+To do that open a CLI in `packages/category_treebuilder/Resources/Private/JavaScript/vue`<br/>
+Install node modules `npm i` (or with ddev `ddev npm i`)<br/>
+Next run `npm run dev` (or with ddev `ddev npm run dev`)<br/>
+
 ## Infos
-This extension was made for the [Typo3](https://typo3.fr/) project, [see on TER](https://extensions.typo3.org/extension/category_treebuilder)
+This extension has been built for the [Typo3](https://typo3.fr/) project, [see on TER](https://extensions.typo3.org/extension/category_treebuilder)

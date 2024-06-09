@@ -27,7 +27,7 @@
         <fieldset>
           <div class="col-auto">
               <span id="passwordHelpInline" class="form-text">
-                Modify these fields only if you should know what you're doing
+                Modify these fields only if you know what you're doing
               </span>
           </div>
 
