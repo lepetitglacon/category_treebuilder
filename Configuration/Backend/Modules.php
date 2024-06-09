@@ -17,6 +17,9 @@ return [
             \Petitglacon\CategoryTreebuilder\Controller\TreeController::class => [
                 'index','build','export','import'
             ],
+            \Petitglacon\CategoryTreebuilder\Controller\AjaxController::class => [
+                'update','build','export','import'
+            ],
         ],
     ],
 ];

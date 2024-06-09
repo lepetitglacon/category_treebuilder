@@ -96,39 +96,42 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * Update an existing category
-     *
-     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function update(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+    public function updateAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
-        $args = $request->getParsedBody();
-        $category = $args['category'];
+        $args = $request->getParsedBody()['category'];
 
-        $cat = new Category(
-            $category['uid'],
-            $category['pid'],
-            $category['parent'],
-            $category['title']
-        );
-//
-        $res = $this->queryManager->update($cat);
-
-        if ($res['rows'] === 1) {
-            $success = true;
-            $message = 'category ' . $res['uid'] . ' created';
-        } else {
-            $success = false;
-            $message = 'category ' . $res['uid'] . ' could not be created';
+        $categoryUid = $args['__identity'] ?? $args['uid'] ?? null;
+        if (is_null($categoryUid)) {
+            return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+                ToastStatus::ERROR,
+                'Category uid not found')
+            );
         }
 
-        return $this->jsonResponse(json_encode([
-            'success' => $success,
-            'uid' => $res['uid'],
-            'message' => $message,
-            'res' => $res
-        ]));
+        $category = $this->categoryRepository->findOneBy(['uid' => $categoryUid]);
+        $title = $category->getTitle();
+        if (is_null($category)) {
+            return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+                ToastStatus::ERROR,
+                'Category not found in repository')
+            );
+        }
+
+        $category->setTitle($args['title'] ?? $category->getTitle());
+        $category->setPid($args['pid'] ?: (int)$args['pid'] ?? $category->getPid());
+
+        // TODO sorting
+        // https://stackoverflow.com/questions/36896377/typo3-commandcontroller-how-to-set-table-field-sorting-of-extbase-object
+
+        $this->categoryRepository->update($category);
+        $this->persistenceManager->persistAll();
+
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+            ToastStatus::SUCCESS,
+            "Category \"$title\" [$categoryUid] updated")
+        );
     }
 
     public function deleteAll(): ResponseInterface {

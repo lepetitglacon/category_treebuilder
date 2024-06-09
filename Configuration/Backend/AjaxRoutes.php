@@ -16,8 +16,9 @@ return [
         'target' => AjaxController::class . '::insert',
     ],
     'category_treebuilder_update' => [
-        'path' => '/category_treebuilder/insert',
-        'target' => AjaxController::class . '::update',
+        'path' => '/category_treebuilder/update',
+        'methods' => ['POST'],
+        'target' => AjaxController::class . '::updateAction',
     ],
     'category_treebuilder_insertorupdate' => [
         'path' => '/category_treebuilder/insert',
