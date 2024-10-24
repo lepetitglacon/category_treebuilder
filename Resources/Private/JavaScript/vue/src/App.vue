@@ -1,3 +1,60 @@
+
+<script setup>
+import './assets/main.css';
+import 'vue-toast-notification/dist/theme-sugar.css';
+import { ref, onMounted } from 'vue';
+import CategoryTree from "@/components/CategoryTree.vue";
+import useT3Api from "@/composables/useT3Api.js";
+import {useCategoryTree} from "@/composables/useCategoryTree.js";
+import {useCollapsibleRefs} from "@/composables/useCollapsibleRefs.js";
+import {DialogRoot} from "radix-vue";
+import UpdatePopin from "@/components/UpdatePopin.vue";
+import Modal from '@typo3/backend/modal.js';
+import Severity from '@typo3/backend/severity.js';
+import DeferredAction from "@typo3/backend/action-button/deferred-action.js";
+
+import githubLogo from './assets/github.png'
+import typo3Logo from './assets/typo3.png'
+import petitglaconLogo from './assets/petitglacon.png'
+import ImportFromText from "@/components/ImportFromText.vue";
+
+const {tree, loadTree} = useCategoryTree()
+const {collapse, expend} = useCollapsibleRefs()
+const {makeT3Request, makeT3PostRequest} = useT3Api()
+
+onMounted(async () => {
+  loadTree()
+})
+
+function filterBySearch(item) {
+  return item
+}
+
+const handleActionButton = async (e) => {
+  Modal.confirm(
+      e.target.dataset['action'] === 'category_treebuilder_generatefakedata' ? 'Generate fake categories' : 'Delete all categories ?',
+      e.target.dataset['action'] === 'category_treebuilder_generatefakedata' ? 'Do you really want to generate fake categories ?' : `Do you really want to delete ALL categories ?`,
+      Severity.warning,
+      [
+        {
+          text: 'Cancel',
+          trigger: function () {
+            Modal.dismiss();
+          }
+        },
+        {
+          text: e.target.dataset['action'] === 'category_treebuilder_generatefakedata' ? 'Generate' : `Delete all`,
+          btnClass: 'btn-danger',
+          action: new DeferredAction(async () => {
+            return makeT3Request(e.target.dataset['action']);
+          })
+        }
+      ]
+  );
+}
+
+</script>
+
 <template>
     <div class="container-fluid" style="min-width: 90vw">
       <div class="row d-flex">
@@ -61,12 +118,16 @@
                 <hr>
 
                 <div id="ext-conf_actions" class="row">
-                  <h2>Actions</h2><p>(Comming soon)</p>
+                  <h2>Actions</h2>
+                  <ImportFromText/>
                   <button disabled class="btn btn-light mb-2">Full text Importer</button>
                 </div>
 
                 <div id="ext-conf_actions" class="row">
                   <h2>Danger zone</h2>
+
+
+
                   <button class="btn btn-warning mb-2" data-action="category_treebuilder_generatefakedata" @click="handleActionButton">Generate fake categories</button>
                   <button class="btn btn-danger mb-2" data-action="category_treebuilder_deleteall" @click="handleActionButton">Delete all categories</button>
                 </div>
@@ -85,65 +146,6 @@
       </div>
     </div>
 </template>
-
-<script setup>
-import './assets/main.css';
-import 'vue-toast-notification/dist/theme-sugar.css';
-import { ref, onMounted } from 'vue';
-import CategoryTree from "@/components/CategoryTree.vue";
-import useT3Api from "@/composables/useT3Api.js";
-import {useCategoryTree} from "@/composables/useCategoryTree.js";
-import {useCollapsibleRefs} from "@/composables/useCollapsibleRefs.js";
-import {DialogRoot} from "radix-vue";
-import UpdatePopin from "@/components/UpdatePopin.vue";
-import Modal from '@typo3/backend/modal.js';
-import Severity from '@typo3/backend/severity.js';
-import DeferredAction from "@typo3/backend/action-button/deferred-action.js";
-
-import githubLogo from './assets/github.png'
-import typo3Logo from './assets/typo3.png'
-import petitglaconLogo from './assets/petitglacon.png'
-
-console.log(githubLogo)
-
-
-const {tree, loadTree} = useCategoryTree()
-const {collapse, expend} = useCollapsibleRefs()
-
-const {makeT3Request, makeT3PostRequest} = useT3Api()
-
-onMounted(async () => {
-  loadTree()
-})
-
-function filterBySearch(item) {
-  return item
-}
-
-const handleActionButton = async (e) => {
-  Modal.confirm(
-      e.target.dataset['action'] === 'category_treebuilder_generatefakedata' ? 'Generate fake categories' : 'Delete all categories ?',
-      e.target.dataset['action'] === 'category_treebuilder_generatefakedata' ? 'Do you really want to generate fake categories ?' : `Do you really want to delete ALL categories ?`,
-      Severity.warning,
-      [
-        {
-          text: 'Cancel',
-          trigger: function () {
-            Modal.dismiss();
-          }
-        },
-        {
-          text: e.target.dataset['action'] === 'category_treebuilder_generatefakedata' ? 'Generate' : `Delete all`,
-          btnClass: 'btn-danger',
-          action: new DeferredAction(async () => {
-            return makeT3Request(e.target.dataset['action']);
-          })
-        }
-      ]
-  );
-}
-
-</script>
 
 <style>
 
