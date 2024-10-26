@@ -94,4 +94,47 @@ class TreeBuilder
 
         return $rootTree;
     }
+
+    public function parseTextTree($text, $settings = [])
+    {
+        $rootPid = $settings['pid'] ?? 0;
+        $parentUid = $settings['parent'] ?? 0;
+        $rootParentCategory = $this->categoryRepository->findByUid($parentUid);
+
+        $categories = [];
+        $parents = [$rootParentCategory];
+
+        if (!empty($text)) {
+
+            // trim " from json encoded string
+            $categoryTreeFromForm = str_replace('"', '', $text);
+
+            foreach (explode('\\n', $categoryTreeFromForm) as $lineCount => $line) {
+                if (empty($line)) {
+                    break;
+                }
+                $category = new Category();
+                $depth = substr_count($line, '\\t');
+
+//                $matches = [];
+//                preg_match_all('/\[([0-9]*?)\]/', $line, $matches);
+//                if (!empty($matches[1])) {
+//                    $uid = (int)$matches[1][count($matches[1]) - 1];
+//                    $title = trim(preg_replace('/\[[0-9]*?\](?! \[([0-9]*?)\])/', '', $line));
+//                } else {
+                    $title = $line;
+//                }
+                $title = trim(str_replace(['\\t', '\\', '"'], '', $title));
+
+                $category->setTitle($title);
+                $category->setParent($parents[$depth]);
+                $category->setPid($category?->getParent()?->getPid() ?? (int)$rootPid);
+
+                $parents[$depth + 1] = $category;
+                $categories[] = $category;
+            }
+        }
+
+        return $categories;
+    }
 }

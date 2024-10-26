@@ -5,6 +5,7 @@
     @change="handleMove"
     :move="onMove"
 		class="draggable-item"
+    :class="classes"
 		tag="ul"
     filter=".category-disabled"
 		:list="children"
@@ -36,7 +37,8 @@ const lastSortableMoveEvent = ref()
 
 const props = defineProps({
   element: {},
-  children: []
+  children: [{title: 'undefined'}],
+  classes: ''
 })
 
 function onMove(e) {
@@ -59,8 +61,11 @@ async function handleMove(e) {
 
 </script>
 
-<style scoped>
+<style>
 .draggable-item {
 	/* outline: 1px dashed #00bd7e; */
+}
+.show-boundaries {
+  outline: 1px dashed #d8d8d8;
 }
 </style>

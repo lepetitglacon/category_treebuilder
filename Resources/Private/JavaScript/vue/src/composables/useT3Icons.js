@@ -9,6 +9,7 @@ const icons = {
     'actions-document-edit': null,
     'actions-document-view': null,
     'miscellaneous-placeholder': null,
+    'apps-pagetree-folder-root': null,
     'apps-pagetree-category-expand-all': null,
     'apps-pagetree-category-collapse-all': null,
     'spinner-circle': null

@@ -28,4 +28,8 @@ return [
         'path' => '/category_treebuilder/delete',
         'target' => AjaxController::class . '::deleteAction',
     ],
+    'category_treebuilder_import_from_text' => [
+        'path' => '/category_treebuilder/importFromText',
+        'target' => AjaxController::class . '::importFromTextAction',
+    ],
 ];
