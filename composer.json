@@ -1,7 +1,7 @@
 {
     "name": "petitglacon/category-treebuilder",
     "type": "typo3-cms-extension",
-    "description": "create category tree from indented text file",
+    "description": "Build and manage your category tree.",
     "authors": [],
     "license": "GPL-2.0-or-later",
     "require": {

@@ -92,7 +92,7 @@ function handleExpendCollapse() {
                         3.1.0
                         <span class="badge badge-dark">beta</span>
                       </div>
-                      <div id="ext-conf_socials" class="col">
+                      <div id="ext-conf_socials" class="col d-flex">
                         <a class="mx-2" href="https://github.com/lepetitglacon/category_treebuilder" title="See on github"  target="_blank">
                           <img alt="See on github" class="picto" :src="'/_assets/5175194f086937d302a346a098d2cf15/dist' + githubLogo">
                         </a>
@@ -100,7 +100,7 @@ function handleExpendCollapse() {
                           <img alt="See on TER" class="picto" :src="'/_assets/5175194f086937d302a346a098d2cf15/dist' + typo3Logo">
                         </a>
                         <a class="mx-2" href="https://petitglacon.com" title="petitglacon.com" target="_blank">
-                          <img alt="petitglacon.com" class="picto" :src="'/_assets/5175194f086937d302a346a098d2cf15/dist' + petitglaconLogo">
+                          <img alt="petitglacon.com" class="picto" :src="'/_assets/5175194f086937d302a346a098d2cf15/dist' + typo3Logo">
                         </a>
                       </div>
                     </div>

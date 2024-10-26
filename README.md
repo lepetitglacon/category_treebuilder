@@ -3,8 +3,8 @@ Build and manage easily your category tree.
 
 ## Install
 
-> :warning: Do not install this extension in production environnement ! :warning: <br>
-> This extension is still under development, it might ruin your category folder structure or delete all your categories
+> :warning: Do not install this extension in production environment ! :warning: <br>
+> This extension is still under development, it might ruin your category folder structure or delete all your categories<br>
 > Install at your own risks
 
 ### Manual install
@@ -30,15 +30,8 @@ Build and manage easily your category tree.
 - Generate fake categories
 
 ## Roadmap
-reintroduce v11 features like
-- Import/export categories from/to `text`, `csv`, `json` files
-- Keep history of category tree
-<br>
-
-and continue growing this extension
-- Adding fields to handle in context menu
-- folders handling
-- typoscript settings
+- Translations 
+- Folders handling
 
 ### Open source
 Don't hesitate to open issue for feature request or bugs
@@ -52,7 +45,9 @@ See version changelog in changelog.md
 ### Contextual menu
 ![img_1.png](./Documentation/readme/contextmenu.png)
 ### Create/Update Modal
-![img_5.png](./Documentation/readme/modal.png)
+![img_2.png](./Documentation/readme/modal.png)
+### Full text importer
+![img_3.png](./Documentation/readme/fulltextimporter.png)
 
 ## Dev
 ### Build
