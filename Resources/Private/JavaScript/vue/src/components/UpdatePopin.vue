@@ -87,14 +87,10 @@
 <script setup>
 import {DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle} from "radix-vue";
 import {useContextMenu} from "@/composables/useContextMenu.js";
-import {useCategoryTree} from "@/composables/useCategoryTree.js";
-import {useCollapsibleRefs} from "@/composables/useCollapsibleRefs.js";
 import useT3Api from "@/composables/useT3Api.js";
 import {ref} from "vue";
 
 const {contextMenuInfos} = useContextMenu()
-const {tree, loadTree} = useCategoryTree()
-const {collapse, expend} = useCollapsibleRefs()
 const {makeT3Request, makeT3PostRequest} = useT3Api()
 
 const form = ref()

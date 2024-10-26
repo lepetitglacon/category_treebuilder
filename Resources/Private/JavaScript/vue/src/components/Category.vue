@@ -2,7 +2,9 @@
 
     <ContextMenu :category="element">
       <p class="category" >
-        <T3Icon :title="'uid: ' + element.uid + ' pid: ' + element.pid" name="mimetypes-x-sys_category"/>
+        <T3Icon v-if="element.parent == 0" title="Is at root level" name="apps-pagetree-folder-root"/>
+        <span v-if="element.parent == 0">  </span>
+        <T3Icon :title="'uid=' + element.uid + ' pid=' + element.pid" name="mimetypes-x-sys_category"/>
         {{ element.title }}
       </p>
     </ContextMenu>

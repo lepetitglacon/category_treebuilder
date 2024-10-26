@@ -103,7 +103,7 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $title = $category->getTitle();
 
         $category->setTitle($args['title'] ?? $category->getTitle());
-        $category->setPid($args['pid'] ? (int)$args['pid'] : null ?? $category->getPid());
+        $category->setPid(isset($args['pid']) ? (int)$args['pid'] : null ?? $category->getPid());
 
         if ($args['parent'] == 0) {
             $category->setParent(null);
@@ -158,6 +158,37 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function importFromTextAction(ServerRequestInterface $request): ResponseInterface {
+        $text = $request->getParsedBody()['text'];
+        if (empty($text)) {
+            return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+                ToastStatus::ERROR,
+                "Text is empty"
+            ));
+        }
+
+        $categories = $this->treeBuilder->parseTextTree($text, [
+            'pid' => $request->getParsedBody()['pid'],
+            'parent' => $request->getParsedBody()['parent']
+        ]);
+
+        foreach ($categories as $category) {
+            $this->categoryRepository->add($category);
+        }
+
+        $this->persistenceManager->persistAll();
+
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+            ToastStatus::SUCCESS,
+            count($categories) . " categories has been created")
+        );
+    }
+
+    /**
      * @return ResponseInterface
      */
     public function deleteAllAction(): ResponseInterface {
@@ -172,12 +203,18 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     public function generateFakeDataAction(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface {
+
+        $pid = $request->getParsedBody()['pid'] ?? 0;
+        $parent = $request->getParsedBody()['parent'] ?? null;
+        $rootParentCategory = $this->categoryRepository->findByUid($parent);
+        $number = $request->getParsedBody()['number'] ?? 10;
+
         $faker = \Faker\Factory::create();
 
-        $parents = [];
-        for ($i = 0; $i < 100; $i++) {
+        $parents = [$rootParentCategory];
+        for ($i = 0; $i < $number; $i++) {
             $category = new Category();
-            $category->setPid(0);
+            $category->setPid((int)$pid);
             $category->setTitle($faker->words($faker->numberBetween(1, 10), true));
             $category->setParent($faker->randomElement($parents));
 
@@ -186,7 +223,10 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
 
         $this->persistenceManager->persistAll();
-        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(ToastStatus::SUCCESS, 'Fake data generated'));
+        return $this->jsonResponse(AjaxResponseUtility::getJsonResponse(
+            ToastStatus::SUCCESS,
+            "$number categories generated from pid $pid"
+        ));
     }
 
 }
