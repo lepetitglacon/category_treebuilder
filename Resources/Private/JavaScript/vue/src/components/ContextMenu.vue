@@ -42,16 +42,22 @@
 
         <ContextMenuSeparator as="hr" class="dropdown-divider"/>
 
-        <ContextMenuItem value="New Tab" @click="handleClick">
+        <ContextMenuItem value="New Tab" @click="prepareFullTextImporter">
           <div>New Categories (inside)</div>
         </ContextMenuItem>
-        <ContextMenuItem value="New Tab" @click="handleClick">
+        <ContextMenuItem value="New Tab" @click="prepareFullTextImporterAfter">
           <div>New Categories (after)</div>
         </ContextMenuItem>
 
         <ContextMenuSeparator as="hr" class="dropdown-divider"/>
 
-        <ContextMenuItem class="bg-danger text-white" value="New Tab" @click="handleDelete">
+        <ContextMenuItem class="text-warning" value="New Tab" @click="handleGenerateFakeCategories">
+          <div>Generate fake categories inside</div>
+        </ContextMenuItem>
+
+        <ContextMenuSeparator as="hr" class="dropdown-divider"/>
+
+        <ContextMenuItem class="text-danger" value="New Tab" @click="handleDelete">
           <span>Delete</span>
         </ContextMenuItem>
 
@@ -71,21 +77,21 @@ import {
   ContextMenuTrigger,
   DialogTrigger
 } from 'radix-vue'
-import {ref} from "vue";
+import {inject, ref} from "vue";
 import {useContextMenu} from '../composables/useContextMenu.js'
 import useT3Api from "@/composables/useT3Api.js";
 import Modal from '@typo3/backend/modal.js';
 import Severity from '@typo3/backend/severity.js';
 import DeferredAction from "@typo3/backend/action-button/deferred-action.js";
 
-
 const {contextMenuInfos} = useContextMenu()
 const {makeT3Request, makeT3PostRequest} = useT3Api()
-
 
 const props = defineProps({
   category: {}
 })
+
+const importFromTextRef = inject('importFromTextRef')
 
 const open = ref(false)
 
@@ -153,8 +159,43 @@ async function handleDelete() {
   );
 }
 
-function handleClick() {
-  alert('not implemented yet')
+function prepareFullTextImporter() {
+  importFromTextRef.value.pid = props.category.pid
+  importFromTextRef.value.parent = props.category.uid
+  importFromTextRef.value.open = true
+}
+function prepareFullTextImporterAfter() {
+  prepareFullTextImporter()
+  importFromTextRef.value.parent = props.category.parent
+}
+
+async function handleGenerateFakeCategories() {
+  const number = 10
+  Modal.confirm(
+      'Generate categories',
+      `Generate ${number} category inside category "${props.category.title}" [${props.category.uid}] ?`,
+      Severity.warning,
+      [
+        {
+          text: 'Cancel',
+          trigger: function () {
+            Modal.dismiss();
+          }
+        },
+        {
+          active: true,
+          text: 'Generate',
+          btnClass: 'btn-success',
+          action: new DeferredAction(async () => {
+            return await makeT3PostRequest('category_treebuilder_generatefakedata', {
+              'pid': props.category.pid,
+              'parent': props.category.uid,
+              'number': number
+            })
+          })
+        }
+      ]
+  );
 }
 </script>
 

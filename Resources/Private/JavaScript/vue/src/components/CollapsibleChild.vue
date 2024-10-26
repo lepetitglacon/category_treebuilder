@@ -28,7 +28,7 @@
         <CategoryTree v-if="element.children" :element="element" :children="element.children" />
 
         <!-- permet de pouvoir ajouter des enfants quand il n'y en a pas -->
-        <CategoryTree v-else :element="element" :children="element.children" />
+        <CategoryTree v-else :element="element" :children="element.children" :classes="'show-boundaries'"/>
       </li>
     </CollapsibleContent>
 
@@ -43,7 +43,7 @@ import Category from "@/components/Category.vue";
 import {onMounted, ref, watch} from "vue";
 import {useCollapsibleRefs} from "@/composables/useCollapsibleRefs.js";
 import T3Icon from "@/components/T3Icon.vue";
-const {createRef, addRef, getRefs} = useCollapsibleRefs()
+const {createRef, addRef} = useCollapsibleRefs()
 
 const props = defineProps({
   element: {}
