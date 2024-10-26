@@ -89,7 +89,7 @@ function handleExpendCollapse() {
                   <div class="row">
                     <div class="row">
                       <div id="ext-conf_version" class="col ">
-                        3.0.0
+                        3.1.0
                         <span class="badge badge-dark">beta</span>
                       </div>
                       <div id="ext-conf_socials" class="col">
