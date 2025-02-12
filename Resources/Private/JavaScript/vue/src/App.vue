@@ -1,6 +1,8 @@
 
 <script setup>
+import './assets/base.css';
 import './assets/main.css';
+
 import 'vue-toast-notification/dist/theme-sugar.css';
 import { ref, onMounted, provide } from 'vue';
 import CategoryTree from "@/components/CategoryTree.vue";

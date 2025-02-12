@@ -31,7 +31,6 @@ class TreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $this->pageRenderer->addCssFile('EXT:category_treebuilder/Resources/Public/dist/assets/index.css');
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($moduleTemplate->renderContent());
+        return $moduleTemplate->renderResponse('Index');
     }
 }
